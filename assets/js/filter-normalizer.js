@@ -320,4 +320,12 @@
   }
 
   run();
+
+  window.MediaGalleryRefreshFilters = function () {
+    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach(scope => {
+      scope.dataset.mgFiltersMounted = "";
+      scope.querySelectorAll(".mg-filter-panel").forEach(panel => panel.remove());
+    });
+    run();
+  };
 })();

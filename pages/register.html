@@ -29,28 +29,28 @@
 </label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">badge</span>
-<input class="w-full h-11 pl-11 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="fullname" name="fullname" placeholder="Алексей Смирнов" type="text" value="Алексей Смирнов"/>
+<input class="w-full h-11 pl-11 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="fullname" name="fullname" placeholder="Алексей Смирнов" type="text"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface" for="username">Имя пользователя</label>
 <div class="relative flex items-center">
 <div class="absolute left-3.5 font-label-lg text-label-lg text-outline select-none font-semibold">@</div>
-<input class="w-full h-11 pl-9 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="username" name="username" placeholder="alex_smirnov" type="text" value="alex_smirnov"/>
+<input class="w-full h-11 pl-9 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="username" name="username" placeholder="alex_smirnov" type="text"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface" for="email">Email</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">alternate_email</span>
-<input class="w-full h-11 pl-11 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="email" name="email" placeholder="alexey@example.com" type="email" value="alexey@example.com"/>
+<input class="w-full h-11 pl-11 pr-3.5 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all placeholder:text-outline/70" id="email" name="email" placeholder="alexey@example.com" type="email"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface" for="password">Пароль</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">lock</span>
-<input class="w-full h-11 pl-11 pr-11 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all" id="password" name="password" placeholder="••••••••••••" type="password" value="SuperSecure123!"/>
+<input class="w-full h-11 pl-11 pr-11 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm hover:bg-surface-container-lowest focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all" id="password" name="password" placeholder="••••••••••••" type="password"/>
 <button aria-label="Показать или скрыть пароль" class="absolute right-2.5 p-1 text-outline hover:text-on-surface rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center" id="toggle-pwd-btn" type="button">
 <span class="material-symbols-outlined text-[20px]" id="toggle-pwd-icon">visibility</span>
 </button>
@@ -65,17 +65,17 @@
 </div>
 <div class="flex flex-col gap-1.5">
 <div class="flex items-center justify-between">
-<label class="font-label-lg text-label-lg text-error" for="confirm_password">Повторите пароль</label>
-<span class="font-label-caps text-label-caps text-error">Не совпадает</span>
+<label class="font-label-lg text-label-lg text-on-surface" data-password-label for="confirm_password">Повторите пароль</label>
+<span class="font-label-caps text-label-caps text-error" data-password-status hidden>Не совпадает</span>
 </div>
 <div class="relative flex items-center">
-<span class="material-symbols-outlined absolute left-3.5 text-error text-[20px] pointer-events-none">lock_reset</span>
-<input class="w-full h-11 pl-11 pr-11 bg-error-container/20 text-on-surface font-body-md text-body-md rounded-[10px] shadow-[0_0_0_1.5px_#ba1a1a] focus:outline-none focus:shadow-[0_0_0_3px_rgba(186,26,26,0.25)] transition-all" id="confirm_password" name="confirm_password" placeholder="••••••••••••" type="password" value="SuperSecure123"/>
-<button aria-label="Показать или скрыть повторный пароль" class="absolute right-2.5 p-1 text-error hover:text-on-error-container rounded-lg hover:bg-error-container/40 transition-colors flex items-center justify-center" id="toggle-cpwd-btn" type="button">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none" data-password-icon>lock_reset</span>
+<input aria-invalid="false" class="w-full h-11 pl-11 pr-11 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-[10px] shadow-sm focus:outline-none focus:shadow-[0_0_0_3px_rgba(79,70,229,0.18)] transition-all" data-password-confirm id="confirm_password" name="confirm_password" placeholder="••••••••••••" type="password"/>
+<button aria-label="Показать или скрыть повторный пароль" class="absolute right-2.5 p-1 text-outline hover:text-on-surface rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center" id="toggle-cpwd-btn" type="button">
 <span class="material-symbols-outlined text-[20px]" id="toggle-cpwd-icon">visibility</span>
 </button>
 </div>
-<div class="flex items-center gap-1.5 text-error px-1 py-0.5 animate-fadeIn">
+<div class="flex items-center gap-1.5 text-error px-1 py-0.5 animate-fadeIn" data-password-error hidden>
 <span class="material-symbols-outlined text-[18px] shrink-0" style="font-variation-settings: 'FILL' 1;">error</span>
 <span class="font-body-sm text-body-sm font-medium">Пароли не совпадают</span>
 </div>
@@ -160,14 +160,14 @@
 </label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3 text-[20px] text-on-surface-variant pointer-events-none">badge</span>
-<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-fullname" placeholder="Александр Смирнов" type="text" value="Александр Смирнов"/>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-fullname" placeholder="Александр Смирнов" type="text"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface font-medium" for="reg-username">Имя пользователя</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3 text-[20px] text-on-surface-variant pointer-events-none">alternate_email</span>
-<input class="w-full h-12 pl-10 pr-10 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-username" placeholder="alex_creator" type="text" value="alex_creator"/>
+<input class="w-full h-12 pl-10 pr-10 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-username" placeholder="alex_creator" type="text"/>
 <span class="material-symbols-outlined absolute right-3 text-[20px] text-secondary pointer-events-none" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 </div>
 <p class="font-body-sm text-body-sm text-on-surface-variant pl-1">Будет отображаться в ссылке на ваш профиль</p>
@@ -176,14 +176,14 @@
 <label class="font-label-lg text-label-lg text-on-surface font-medium" for="reg-email">Email</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3 text-[20px] text-on-surface-variant pointer-events-none">mail</span>
-<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-email" placeholder="alex@gallery.art" type="email" value="alex@gallery.art"/>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-email" placeholder="alex@gallery.art" type="email"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface font-medium" for="reg-password">Пароль</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3 text-[20px] text-on-surface-variant pointer-events-none">lock</span>
-<input class="w-full h-12 pl-10 pr-11 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-password" placeholder="Минимум 8 символов" type="password" value="ArtMediaSecure#2026"/>
+<input class="w-full h-12 pl-10 pr-11 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" id="reg-password" placeholder="Минимум 8 символов" type="password"/>
 <button aria-label="Показать пароль" class="absolute right-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors" id="toggle-password" type="button">
 <span class="material-symbols-outlined text-[20px]" id="eye-icon-pass">visibility_off</span>
 </button>
@@ -197,17 +197,17 @@
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
-<label class="font-label-lg text-label-lg text-error font-medium flex items-center gap-1" for="reg-confirm-password">
+<label class="font-label-lg text-label-lg text-on-surface font-medium flex items-center gap-1" data-password-label for="reg-confirm-password">
 <span>Повторите пароль</span>
 </label>
 <div class="relative flex items-center">
-<span class="material-symbols-outlined absolute left-3 text-[20px] text-error pointer-events-none">lock_reset</span>
-<input aria-describedby="password-error-msg" aria-invalid="true" class="w-full h-12 pl-10 pr-11 bg-error-container/30 text-on-surface font-body-md text-body-md rounded-lg shadow-[0_0_0_1.5px_#ba1a1a] focus:outline-none focus:shadow-[0_0_0_2px_#ba1a1a] transition-all" id="reg-confirm-password" type="text" value="ArtMediaSecure"/>
-<button aria-label="Скрыть пароль" class="absolute right-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors" id="toggle-confirm-password" type="button">
-<span class="material-symbols-outlined text-[20px]" id="eye-icon-confirm">visibility</span>
+<span class="material-symbols-outlined absolute left-3 text-[20px] text-on-surface-variant pointer-events-none" data-password-icon>lock_reset</span>
+<input aria-describedby="password-error-msg" aria-invalid="false" class="w-full h-12 pl-10 pr-11 bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:bg-surface-container-lowest focus:outline-none focus:shadow-[0_0_0_2px_#3525cd] transition-all" data-password-confirm id="reg-confirm-password" type="password"/>
+<button aria-label="Показать пароль" class="absolute right-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors" id="toggle-confirm-password" type="button">
+<span class="material-symbols-outlined text-[20px]" id="eye-icon-confirm">visibility_off</span>
 </button>
 </div>
-<div class="flex items-center gap-1.5 px-1 text-error" id="password-error-msg">
+<div class="flex items-center gap-1.5 px-1 text-error" data-password-error hidden id="password-error-msg">
 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">error</span>
 <span class="font-body-sm text-body-sm font-medium">Пароли не совпадают</span>
 </div>
@@ -270,4 +270,4 @@
       });
     }
   })();
-</script></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=7"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>
+</script></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=7"></script><script src="../assets/js/api-client.js?v=2"></script><script src="../assets/js/catalog-api.js?v=2"></script><script src="../assets/js/auth-pages.js?v=2"></script><script src="../assets/js/profile-api.js?v=3"></script><script src="../assets/js/upload-api.js?v=1"></script><script src="../assets/js/detail-admin-api.js?v=1"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>
