@@ -97,7 +97,7 @@
       item.style.outline = active ? "2px solid #4f46e5" : "";
       item.style.outlineOffset = active ? "1px" : "";
 
-      if (scope.classList.contains("stitch-mobile-view")) {
+      if (scope.classList.contains("mobile-view")) {
         item.classList.toggle("bg-primary-fixed", active);
         item.classList.toggle("bg-surface-container-lowest", !active);
         item.classList.toggle("shadow-md", active);
@@ -509,7 +509,7 @@
     cleanupObjectUrls(scope);
 
     if (label) {
-      label.textContent = scope.classList.contains("stitch-mobile-view")
+      label.textContent = scope.classList.contains("mobile-view")
         ? "Нажмите для выбора файла"
         : "Перетащите файл сюда";
     }
@@ -818,7 +818,7 @@
 
     const categories = (await MG.api("categories")).categories;
 
-    for (const scope of document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view")) {
+    for (const scope of document.querySelectorAll(".desktop-view,.mobile-view")) {
       await setupScope(scope, categories);
     }
   }

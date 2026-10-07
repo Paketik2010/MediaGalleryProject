@@ -83,7 +83,7 @@
   });
 
   if (MG.page === "login.html") {
-    document.querySelectorAll(".stitch-desktop-view form,.stitch-mobile-view form").forEach((form) => {
+    document.querySelectorAll(".desktop-view form,.mobile-view form").forEach((form) => {
       const login = form.querySelector('input[name="identifier"],#login-identifier');
       const password = form.querySelector('input[name="password"],#login-password');
 
@@ -111,8 +111,8 @@
   }
 
   if (MG.page === "register.html") {
-    const desktop = document.querySelector(".stitch-desktop-view");
-    const mobile = document.querySelector(".stitch-mobile-view");
+    const desktop = document.querySelector(".desktop-view");
+    const mobile = document.querySelector(".mobile-view");
 
     if (desktop) {
       setupPasswordCheck(desktop, "#password", "#confirm_password");

@@ -249,7 +249,7 @@
   }
 
   function run() {
-    document.querySelectorAll(".stitch-desktop-view, .stitch-mobile-view").forEach(setup);
+    document.querySelectorAll(".desktop-view, .mobile-view").forEach(setup);
   }
 
   run();

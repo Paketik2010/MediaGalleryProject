@@ -221,7 +221,7 @@
     if (h1) h1.textContent = cfg.title;
 
     if (h1?.parentElement) {
-      const mobile = scope.classList.contains("stitch-mobile-view");
+      const mobile = scope.classList.contains("mobile-view");
       const headerBlock = mobile ? h1.parentElement.parentElement : h1.parentElement;
       const subtitle = headerBlock
         ? [...headerBlock.children].find((el) => el.tagName === "P")
@@ -245,7 +245,7 @@
       }
     }
 
-    if (scope.classList.contains("stitch-mobile-view")) {
+    if (scope.classList.contains("mobile-view")) {
       const badge = h1?.parentElement?.querySelector("span");
       if (badge) badge.textContent = cfg.mobileCount;
     }
@@ -389,7 +389,7 @@
 
     document.title = cfg.title + " — MediaGallery";
 
-    document.querySelectorAll(".stitch-desktop-view, .stitch-mobile-view").forEach((scope) => {
+    document.querySelectorAll(".desktop-view, .mobile-view").forEach((scope) => {
       updateHeader(scope, cfg);
       updateCards(scope, cfg);
       updateDesktopNav(scope, key);

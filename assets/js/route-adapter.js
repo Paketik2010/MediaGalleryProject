@@ -27,7 +27,7 @@
   };
 
   const ensureDesktopSearchLink = () => {
-    document.querySelectorAll('.stitch-desktop-view header nav').forEach((nav) => {
+    document.querySelectorAll('.desktop-view header nav').forEach((nav) => {
       if (nav.querySelector('a[data-path="search"]')) return;
 
       const audioLink = nav.querySelector('a[data-path="audio"]');
