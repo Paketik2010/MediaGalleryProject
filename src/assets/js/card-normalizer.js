@@ -462,7 +462,11 @@
   }
 
   function run() {
-    document.querySelectorAll(".desktop-view, .mobile-view").forEach(function(scope) {
+    var path = location.pathname.toLowerCase();
+    var needsMobileCatalogCards = path.endsWith("/images.html") || path.endsWith("/videos.html");
+    var selector = needsMobileCatalogCards ? ".desktop-view, .mobile-view" : ".desktop-view";
+
+    document.querySelectorAll(selector).forEach(function(scope) {
       normalizeArticles(scope);
       normalizeLooseCards(scope);
       normalizeRoundedDivCards(scope);

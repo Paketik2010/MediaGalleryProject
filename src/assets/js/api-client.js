@@ -163,6 +163,24 @@
     }
 
     container.innerHTML = materials.map((material) => cardHtml(material, canDelete)).join("");
+
+    if (scope.classList.contains("mobile-view")) {
+      container.querySelectorAll(".mg-card").forEach((card) => {
+        const type = card.dataset.materialType;
+        const badge = card.querySelector(".mg-card__type");
+        const save = card.querySelector(".mg-card__save");
+        const saveIcon = save?.querySelector(".material-symbols-outlined");
+
+        if (type === "image") {
+          if (badge) badge.textContent = "ФОТО";
+          if (save) save.setAttribute("aria-label", "В избранное");
+          if (saveIcon) saveIcon.textContent = "favorite_border";
+        } else if (type === "video") {
+          if (badge) badge.textContent = "ВИДЕО";
+        }
+      });
+    }
+
     return container;
   }
 
@@ -213,6 +231,12 @@
         if (text === "Алексей Смирнов") node.textContent = user ? user.name : "Гость";
         if (text === "alex.smirnov@example.com") node.textContent = user ? user.email : "Не авторизован";
       });
+    });
+
+    document.querySelectorAll(".mg-mobile-nav__account").forEach((link) => {
+      link.dataset.path = user ? "profile" : "login";
+      const label = link.querySelector("span:last-child");
+      if (label) label.textContent = user ? "Кабинет" : "Войти";
     });
   }
 
