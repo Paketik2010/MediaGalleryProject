@@ -171,12 +171,17 @@
         const save = card.querySelector(".mg-card__save");
         const saveIcon = save?.querySelector(".material-symbols-outlined");
 
+        if (save && !save.hasAttribute("data-api-delete")) {
+          save.setAttribute("aria-label", "В избранное");
+          if (saveIcon) saveIcon.textContent = "favorite_border";
+        }
+
         if (type === "image") {
           if (badge) badge.textContent = "ФОТО";
-          if (save) save.setAttribute("aria-label", "В избранное");
-          if (saveIcon) saveIcon.textContent = "favorite_border";
         } else if (type === "video") {
           if (badge) badge.textContent = "ВИДЕО";
+        } else if (type === "audio") {
+          if (badge) badge.textContent = "АУДИО";
         }
       });
     }
@@ -281,10 +286,13 @@
       const save = card.querySelector(".mg-card__save");
       const saveIcon = save?.querySelector(".material-symbols-outlined");
 
+      if (save && !save.hasAttribute("data-api-delete")) {
+        save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      }
+
       if (type === "image") {
         if (badge) badge.textContent = "ФОТО";
-        if (save) save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
       } else if (type === "video") {
         if (badge) badge.textContent = "ВИДЕО";
       } else if (type === "audio") {

@@ -161,10 +161,13 @@
       const save = card.querySelector(".mg-card__save");
       const saveIcon = save?.querySelector(".material-symbols-outlined");
 
+      if (save && !save.hasAttribute("data-api-delete")) {
+        save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      }
+
       if (type === "image") {
         if (badge) badge.textContent = "ФОТО";
-        if (save) save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
       } else if (type === "video") {
         if (badge) badge.textContent = "ВИДЕО";
       } else if (type === "audio") {
@@ -484,6 +487,53 @@
       );
       const sortWrap = sortCaption?.parentElement;
       const sortButton = sortWrap?.querySelector("button");
+      const controlRow = sortWrap?.parentElement;
+
+      if (controlRow && sortWrap) {
+        [...controlRow.children].forEach((child) => {
+          if (child !== sortWrap) child.remove();
+        });
+
+        const viewControls = document.createElement("div");
+        viewControls.className = "flex items-center gap-1.5";
+        viewControls.innerHTML =
+          '<button type="button" data-mobile-view="grid" aria-label="Вид сеткой" aria-pressed="true" class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary shadow-sm transition-colors">' +
+            '<span class="material-symbols-outlined text-[18px]">grid_view</span>' +
+          '</button>' +
+          '<button type="button" data-mobile-view="list" aria-label="Вид списком" aria-pressed="false" class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors">' +
+            '<span class="material-symbols-outlined text-[18px]">view_agenda</span>' +
+          '</button>';
+        controlRow.appendChild(viewControls);
+
+        const gridButton = viewControls.querySelector('[data-mobile-view="grid"]');
+        const listButton = viewControls.querySelector('[data-mobile-view="list"]');
+
+        const syncViewButtons = () => {
+          [[gridButton, !state.list], [listButton, state.list]].forEach(([button, active]) => {
+            if (!button) return;
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+            button.classList.toggle("bg-primary", active);
+            button.classList.toggle("text-on-primary", active);
+            button.classList.toggle("shadow-sm", active);
+            button.classList.toggle("bg-surface-container-low", !active);
+            button.classList.toggle("text-on-surface-variant", !active);
+          });
+        };
+
+        gridButton?.addEventListener("click", () => {
+          state.list = false;
+          syncViewButtons();
+          render();
+        });
+
+        listButton?.addEventListener("click", () => {
+          state.list = true;
+          syncViewButtons();
+          render();
+        });
+
+        syncViewButtons();
+      }
 
       if (sortWrap && sortButton) {
         sortWrap.style.position = "relative";
