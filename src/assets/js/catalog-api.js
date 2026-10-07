@@ -8,9 +8,14 @@
     "videos.html": "video",
     "audio.html": "audio"
   };
+  const isCatalogPage = page in catalogTypes;
+
+  if (isCatalogPage) {
+    document.documentElement.classList.add("mg-catalog-loading");
+  }
 
   async function loadCatalog() {
-    if (!(page in catalogTypes)) return;
+    if (!isCatalogPage) return;
 
     const type = catalogTypes[page];
     const query = type ? "?type=" + encodeURIComponent(type) : "";
@@ -25,6 +30,8 @@
     if (window.MediaGalleryRefreshFilters) {
       window.MediaGalleryRefreshFilters();
     }
+
+    document.documentElement.classList.remove("mg-catalog-loading");
   }
 
   function searchStats(scope, count, query) {
@@ -775,6 +782,9 @@
     });
   }
 
-  loadCatalog().catch((error) => MG.toast(error.message, true));
+  loadCatalog().catch((error) => {
+    document.documentElement.classList.remove("mg-catalog-loading");
+    MG.toast(error.message, true);
+  });
   setupSearch().catch((error) => MG.toast(error.message, true));
 })();

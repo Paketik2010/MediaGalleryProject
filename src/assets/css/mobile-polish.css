@@ -1,4 +1,8 @@
 @media (max-width: 680px) {
+  html.mg-catalog-loading .mobile-view {
+    visibility: hidden !important;
+  }
+
   html,
   body {
     width: 100%;
