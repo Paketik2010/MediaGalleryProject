@@ -146,6 +146,31 @@ function validHttpUrl(string $url): ?string {
     return in_array($scheme, ['http', 'https'], true) ? $url : null;
 }
 
+function detectUploadType(?array $file): ?string {
+    if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || empty($file['tmp_name'])) {
+        return null;
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = (string)$finfo->file($file['tmp_name']);
+
+    if (str_starts_with($mime, 'image/')) return 'image';
+    if (str_starts_with($mime, 'video/')) return 'video';
+
+    if (
+        str_starts_with($mime, 'audio/') ||
+        in_array($mime, ['application/ogg'], true)
+    ) {
+        return 'audio';
+    }
+
+    return null;
+}
+
 function saveUpload(string $type, ?array $file): ?array {
     if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
         return null;
@@ -180,8 +205,12 @@ function saveUpload(string $type, ?array $file): ?array {
         'audio' => [
             'audio/mpeg' => 'mp3',
             'audio/wav' => 'wav',
+            'audio/x-wav' => 'wav',
             'audio/ogg' => 'ogg',
             'audio/mp4' => 'm4a',
+            'audio/x-m4a' => 'm4a',
+            'audio/aac' => 'aac',
+            'audio/flac' => 'flac',
         ],
     ];
 

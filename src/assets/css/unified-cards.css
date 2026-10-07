@@ -20,13 +20,15 @@
   overflow: hidden;
   background: #e5eeff;
 }
-.mg-card__preview img {
+.mg-card__preview img,
+.mg-card__preview video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform .3s ease;
 }
-.mg-card:hover .mg-card__preview img { transform: scale(1.035); }
+.mg-card:hover .mg-card__preview img,
+.mg-card:hover .mg-card__preview video { transform: scale(1.035); }
 
 .mg-card__placeholder {
   display: grid;

@@ -80,9 +80,18 @@
     const preview = mediaUrl(previewSource);
     const detail = pageFile("detail.html", "?id=" + material.id);
 
-    const image = preview
-      ? '<img src="' + esc(preview) + '" alt="' + esc(material.title) + '">'
-      : '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
+    let image;
+
+    if (preview) {
+      image = '<img src="' + esc(preview) + '" alt="' + esc(material.title) + '">';
+    } else if (material.type === "video") {
+      const videoSource = mediaUrl(material.fileUrl || material.sourceUrl || "");
+      image = videoSource
+        ? '<video src="' + esc(videoSource) + '" muted playsinline preload="metadata"></video>'
+        : '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
+    } else {
+      image = '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
+    }
 
     const action = canDelete
       ? '<button class="mg-card__save" type="button" data-api-delete="' + material.id + '" aria-label="Удалить"><span class="material-symbols-outlined">delete</span></button>'
