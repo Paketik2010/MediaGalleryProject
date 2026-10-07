@@ -333,6 +333,7 @@
 
       renderMobileCards(container, shown);
       container.classList.toggle("mg-mobile-catalog-list", state.list);
+      container.classList.toggle("mg-mobile-catalog-grid", !state.list);
       updateStatus(filtered.length, shown.length);
 
       if (loadMore) {
