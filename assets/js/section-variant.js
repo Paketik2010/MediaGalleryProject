@@ -10,7 +10,7 @@
       likes: "248",
       views: "1.4k",
       description: "Первые лучи восходящего солнца над Эльбрусом и плотное туманное море в ущелье.",
-      preview: "/MediaGalleryProject/assets/media/media-119.jpg"
+      preview: "/assets/media/media-119.jpg"
     },
     {
       title: "Геометрия бетона: Музей",
@@ -20,7 +20,7 @@
       likes: "167",
       views: "920",
       description: "Минималистичный брутализм, ритмичные тени и геометрические световые люки в атриуме.",
-      preview: "/MediaGalleryProject/assets/media/media-098.jpg"
+      preview: "/assets/media/media-098.jpg"
     },
     {
       title: "Утренняя роса на клевере",
@@ -30,7 +30,7 @@
       likes: "142",
       views: "780",
       description: "Макросъемка капель с преломлением солнечных лучей на рассвете в саду.",
-      preview: "/MediaGalleryProject/assets/media/media-036.jpg"
+      preview: "/assets/media/media-036.jpg"
     },
     {
       title: "Неоновые отражения Синдзюку",
@@ -40,7 +40,7 @@
       likes: "512",
       views: "2.1k",
       description: "Атмосферный ночной Токио под дождем: зеркальные лужи и неоновые вывески.",
-      preview: "/MediaGalleryProject/assets/media/media-061.jpg"
+      preview: "/assets/media/media-061.jpg"
     },
     {
       title: "Скандинавская студия",
@@ -50,7 +50,7 @@
       likes: "210",
       views: "1.1k",
       description: "Минималистичное жилое пространство в теплых естественных тонах с обилием света.",
-      preview: "/MediaGalleryProject/assets/media/media-090.jpg"
+      preview: "/assets/media/media-090.jpg"
     },
     {
       title: "Минимализм в архитектуре",
@@ -60,7 +60,7 @@
       likes: "98",
       views: "640",
       description: "Ритм стеклянных панелей и четкие фасадные линии высотного делового квартала.",
-      preview: "/MediaGalleryProject/assets/media/media-034.jpg"
+      preview: "/assets/media/media-034.jpg"
     },
     {
       title: "Альпийский рассвет над озером",
@@ -70,7 +70,7 @@
       likes: "880",
       views: "3.4k",
       description: "Зеркальная гладь воды и розовое сияние первых лучей на заснеженных вершинах.",
-      preview: "/MediaGalleryProject/assets/media/media-053.jpg"
+      preview: "/assets/media/media-053.jpg"
     },
     {
       title: "Рабочее место дизайнера",
@@ -80,7 +80,7 @@
       likes: "340",
       views: "1.8k",
       description: "Минималистичный сетап с ультрашироким дисплеем, механической клавиатурой и лампой.",
-      preview: "/MediaGalleryProject/assets/media/media-113.jpg"
+      preview: "/assets/media/media-113.jpg"
     }
   ];
 
@@ -93,7 +93,7 @@
       likes: "348",
       views: "4.2k",
       description: "Пошаговый разбор современной адаптивной верстки и практических приемов.",
-      preview: "/MediaGalleryProject/assets/media/media-067.jpg"
+      preview: "/assets/media/media-067.jpg"
     },
     {
       title: "Дикая Исландия: Аэросъемка ледников и водопадов",
@@ -103,7 +103,7 @@
       likes: "1.2k",
       views: "12.8k",
       description: "Кинематографическая аэросъемка ледников, черных пляжей и мощных водопадов.",
-      preview: "/MediaGalleryProject/assets/media/media-109.jpg"
+      preview: "/assets/media/media-109.jpg"
     },
     {
       title: "Архитектура дизайн-систем: масштабирование токенов",
@@ -113,7 +113,7 @@
       likes: "512",
       views: "6.4k",
       description: "Как строить масштабируемые дизайн-системы и поддерживать единый визуальный язык.",
-      preview: "/MediaGalleryProject/assets/media/media-015.jpg"
+      preview: "/assets/media/media-015.jpg"
     },
     {
       title: "Таймлапс: ночное побережье и звездное небо",
@@ -123,7 +123,7 @@
       likes: "840",
       views: "9.1k",
       description: "Медленный ночной таймлапс побережья под ярким звездным небом.",
-      preview: "/MediaGalleryProject/assets/media/media-045.jpg"
+      preview: "/assets/media/media-045.jpg"
     },
     {
       title: "Шоурил моушн-дизайна 2026",
@@ -133,7 +133,7 @@
       likes: "2.1k",
       views: "18.5k",
       description: "Подборка 3D-анимации, кинетической типографики и экспериментального моушна.",
-      preview: "/MediaGalleryProject/assets/media/media-064.jpg"
+      preview: "/assets/media/media-064.jpg"
     },
     {
       title: "Основы UI-анимации: физика жестов и тайминги",
@@ -143,7 +143,7 @@
       likes: "610",
       views: "7.3k",
       description: "Практика плавных интерфейсных переходов, жестов и естественной физики движения.",
-      preview: "/MediaGalleryProject/assets/media/media-059.jpg"
+      preview: "/assets/media/media-059.jpg"
     },
     {
       title: "Утро в кофейне: кинематографичный слоу-моушн",
@@ -153,7 +153,7 @@
       likes: "490",
       views: "5.8k",
       description: "Мягкий утренний свет, кофе и спокойная кинематографичная съемка в слоу-моушн.",
-      preview: "/MediaGalleryProject/assets/media/media-052.jpg"
+      preview: "/assets/media/media-052.jpg"
     },
     {
       title: "Как устроен квантовый процессор",
@@ -163,7 +163,7 @@
       likes: "970",
       views: "11.2k",
       description: "Наглядный разбор архитектуры квантового процессора и базовых принципов его работы.",
-      preview: "/MediaGalleryProject/assets/media/media-017.jpg"
+      preview: "/assets/media/media-017.jpg"
     }
   ];
 
@@ -404,8 +404,8 @@
 
       if (key === "images") {
         if (type) type.textContent = "ФОТО";
-        if (save) save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
+        if (save) save.setAttribute("aria-label", "Сохранить");
+        if (saveIcon) saveIcon.textContent = "bookmark_border";
       } else if (key === "videos") {
         if (type) type.textContent = "ВИДЕО";
       }
