@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Регистрация — MediaGallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/pages/auth.css">
+</head>
+<body data-page="register">
+<div data-site-header></div>
+<main class="auth-layout">
+  <section class="auth-card">
+    <span class="eyebrow">Новый аккаунт</span>
+    <h1>Создать аккаунт</h1>
+    <p>Зарегистрируйтесь, чтобы добавлять свои материалы.</p>
+    <form class="form-grid">
+      <label class="form-label">Имя<input class="field" placeholder="Алексей"></label>
+      <label class="form-label">Имя пользователя<input class="field" placeholder="alex_smirnov"></label>
+      <label class="form-label">Email<input class="field" type="email" placeholder="alex@example.com"></label>
+      <label class="form-label">Пароль<input class="field" type="password" placeholder="••••••••"></label>
+      <label class="form-label">Повторите пароль<input class="field" type="password" placeholder="••••••••"></label>
+      <label class="form-row"><span><input type="checkbox"> Я принимаю правила использования сайта</span></label>
+      <button class="btn btn--primary" type="button" data-toast-trigger>Зарегистрироваться</button>
+      <div class="form-row"><span>Уже есть аккаунт?</span><a class="link" href="login.html">Войти</a></div>
+    </form>
+  </section>
+</main>
+<div class="toast" data-toast>Аккаунт успешно создан</div>
+<div data-site-footer></div><div data-site-bottom></div><script type="module" src="../assets/js/main.js"></script>
+</body>
+</html>

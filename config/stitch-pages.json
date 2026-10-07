@@ -1,0 +1,14 @@
+[
+  {"output":"index.html","desktop":"_1","mobile":"_7","label":"Главная","assetBase":"assets"},
+  {"output":"pages/gallery.html","desktop":"_2","mobile":"_8","label":"Галерея","assetBase":"../assets"},
+  {"output":"pages/admin.html","desktop":"_3","mobile":"_12","label":"Админ-панель","assetBase":"../assets"},
+  {"output":"pages/profile.html","desktop":"_4","mobile":"_11","label":"Личный кабинет","assetBase":"../assets"},
+  {"output":"pages/upload.html","desktop":"_5","mobile":"_9","label":"Добавление материала","assetBase":"../assets"},
+  {"output":"pages/detail.html","desktop":"_6","mobile":"_10","label":"Просмотр материала","assetBase":"../assets"},
+  {"output":"pages/images.html","desktop":"desktop_3","mobile":"mobile_3","label":"Изображения","assetBase":"../assets"},
+  {"output":"pages/videos.html","desktop":"desktop_3","mobile":"mobile_3","label":"Видео","assetBase":"../assets"},
+  {"output":"pages/audio.html","desktop":"desktop_3","mobile":"mobile_3","label":"Аудио","assetBase":"../assets"},
+  {"output":"pages/register.html","desktop":"desktop_4","mobile":"mobile_4","label":"Регистрация","assetBase":"../assets"},
+  {"output":"pages/login.html","desktop":"desktop_5","mobile":"mobile_5","label":"Авторизация","assetBase":"../assets"},
+  {"output":"pages/search.html","desktop":"desktop_6","mobile":"mobile_6","label":"Поиск","assetBase":"../assets"}
+]

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Поиск — MediaGallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/pages/catalog.css">
+</head>
+<body data-page="search">
+<div data-site-header></div>
+<main>
+  <section class="page-head">
+    <div class="container">
+      <span class="eyebrow">Поиск</span>
+      <h1>Поиск материалов</h1>
+      <p>Найдите изображения, видео и аудио по названию, описанию, категории или автору.</p>
+      <form class="toolbar" action="search.html" style="grid-template-columns:2.4fr 1fr 1fr auto">
+        <input class="field" name="q" data-search-input placeholder="Что вы хотите найти?">
+        <select class="field"><option>Все типы</option><option>Изображения</option><option>Видео</option><option>Аудио</option></select>
+        <select class="field"><option>Все категории</option><option>Фотографии</option><option>Музыка</option><option>Обучение</option></select>
+        <button class="btn btn--primary">Найти</button>
+      </form>
+      <div class="catalog-meta"><span>Найдено: <strong data-search-count>0</strong> материалов</span></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="media-grid" data-search-results></div>
+      <div class="catalog-empty" data-search-empty hidden>
+        <span class="material-symbol">search_off</span>
+        <h2>Ничего не найдено</h2>
+        <p>Попробуйте изменить запрос или фильтры.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<div data-site-footer></div><div data-site-bottom></div><script type="module" src="../assets/js/main.js"></script>
+<script type="module" src="../assets/js/pages/search.js"></script>
+</body>
+</html>

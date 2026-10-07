@@ -1,0 +1,74 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Главная — MediaGallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pages/home.css">
+</head>
+<body data-page="home">
+<div data-site-header></div>
+<main>
+  <section class="home-hero">
+    <div class="container home-hero__grid">
+      <div>
+        <span class="eyebrow">Единое медиапространство</span>
+        <h1>Храните и делитесь любимыми материалами</h1>
+        <p class="home-hero__lead">Изображения, видео и аудио в одной удобной галерее. Просматривайте контент по категориям, находите нужное через поиск и добавляйте собственные материалы.</p>
+        <div class="home-hero__actions">
+          <a class="btn btn--primary" href="pages/gallery.html">Открыть галерею <span class="material-symbol">arrow_forward</span></a>
+          <a class="btn btn--secondary" href="pages/upload.html"><span class="material-symbol">add_circle</span>Добавить материал</a>
+        </div>
+      </div>
+
+      <div class="home-collage" aria-label="Примеры мультимедиа">
+        <article class="home-preview-card home-preview-card--photo">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWkPJVf3E1o367LQ0mmVZdrEGxc4VNhomssK5qKXpe1xxZVmYJOqK48KLaD1ed__fZ5ZbGAw3pAqNElIM1QW0k2CNmBKI4vCV4QrLGuuMEZYsrxU6lcXBnfZCValFWzOtFW0hrY4EghVEV6htnfxWKoyGv47LaL0x-wrbB8oalCMaVdhiyeA7UQ_w4omTxYM4SmF5F6lGkTYtkWLR52pSOGnujtfoy7ABjXD17szU" alt="">
+          <div class="home-preview-card__caption">Озеро в Альпах</div>
+        </article>
+        <article class="home-preview-card home-preview-card--video">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX29oS_Y0Bm1lkwEGBgvk5RghmCfo1F7VOc03rdb6K5mFjy-yGrjuCXR6OL1nUP23yF23F6PXBWU-lF4Iu1LwgNkshOsqUtOeVvoy3GNEvFYAxby25RIpUCulrsOvx7shiUA2URGaMFplvLbsPOH1QUOl0qCPAHdzbChVInU9eoFWLg7_rAi_RTDaWGbT1O39KatWVd6EjRhEVhDw7VO1K3N5nv17xCAP5gAtLQ2g" alt="">
+          <span class="home-play material-symbol">play_arrow</span>
+          <div class="home-preview-card__caption">Шоурил анимации 2026</div>
+        </article>
+        <article class="home-preview-card home-preview-card--audio">
+          <div class="home-audio-row">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKa_Z13ROSYyZgnLmpMn6BDaMLJJlp338Eeehn_VOb2Za_lNIaPt1DHW9C8yCkEOPn9tIwkzalj_LRZ-RnPZ4dlnIAzhgbY0tk6jfS4o7yeJ2Ny5n0U9pXezA-aW3scfGI6YiQ01gd_g60JnsvsRmiSQtQbabcWqZ4ZK0V8hi47w_3Xnfl-TYq56Wm_QmPE__WqIx8tYWarmTvz7xnbXmeFelLqrKT7pLFNCU8uBo" alt="">
+            <div><strong>Deep Horizon Lo-Fi</strong><p class="text-muted">Ether Echoes · 03:15</p></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Популярные категории</h2><p>Быстрый переход к нужному контенту</p></div>
+      </div>
+      <div class="home-category-row">
+        <a class="home-category-card" href="pages/images.html"><span class="home-category-card__icon material-symbol">photo_library</span><div><strong>Фотографии</strong><p class="text-muted">180 материалов</p></div></a>
+        <a class="home-category-card" href="pages/audio.html"><span class="home-category-card__icon material-symbol">music_note</span><div><strong>Музыка</strong><p class="text-muted">64 материала</p></div></a>
+        <a class="home-category-card" href="pages/videos.html"><span class="home-category-card__icon material-symbol">school</span><div><strong>Обучение</strong><p class="text-muted">86 материалов</p></div></a>
+        <a class="home-category-card" href="pages/videos.html"><span class="home-category-card__icon material-symbol">movie</span><div><strong>Развлечения</strong><p class="text-muted">44 материала</p></div></a>
+        <a class="home-category-card" href="pages/gallery.html"><span class="home-category-card__icon material-symbol">folder</span><div><strong>Другое</strong><p class="text-muted">28 материалов</p></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Новые материалы</h2><p>Последние добавления пользователей</p></div>
+        <a class="link" href="pages/gallery.html">Смотреть всю галерею →</a>
+      </div>
+      <div class="media-grid media-strip-mobile" data-featured-media></div>
+    </div>
+  </section>
+</main>
+<div data-site-footer></div><div data-site-bottom></div><script type="module" src="assets/js/main.js"></script>
+<script type="module" src="assets/js/pages/home.js"></script>
+</body>
+</html>

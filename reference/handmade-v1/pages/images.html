@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Изображения — MediaGallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/pages/catalog.css">
+</head>
+<body data-page="images" data-filter="image">
+<div data-site-header></div>
+<main>
+  <section class="page-head">
+    <div class="container">
+      <span class="eyebrow">Галерея медиаконтента</span>
+      <h1>Изображения</h1>
+      <p>Фотографии и графические материалы пользователей</p>
+
+      <div class="toolbar">
+        <input class="field" placeholder="Поиск по названию или автору...">
+        <select class="field">
+          <option>Все категории</option><option>Фотографии</option><option>Музыка</option><option>Обучение</option><option>Развлечения</option><option>Другое</option>
+        </select>
+        <select class="field">
+          <option>Сначала новые</option><option>Сначала старые</option><option>По названию</option>
+        </select>
+        <button class="btn btn--secondary btn--icon" type="button"><span class="material-symbol">tune</span></button>
+      </div>
+
+      <nav class="chip-row scroll-x snap-x" aria-label="Тип материала">
+        <a class="chip " href="gallery.html">Все</a>
+        <a class="chip is-active" href="images.html">Изображения</a>
+        <a class="chip " href="videos.html">Видео</a>
+        <a class="chip " href="audio.html">Аудио</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="media-grid" data-media-grid></div>
+      <div class="pagination">
+        <button class="pagination__button is-active">1</button>
+        <button class="pagination__button">2</button>
+        <button class="pagination__button">3</button>
+        <button class="pagination__button">›</button>
+      </div>
+    </div>
+  </section>
+</main>
+<div data-site-footer></div><div data-site-bottom></div><script type="module" src="../assets/js/main.js"></script>
+<script type="module" src="../assets/js/pages/catalog.js"></script>
+</body>
+</html>
