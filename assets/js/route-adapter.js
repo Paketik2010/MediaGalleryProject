@@ -93,6 +93,6 @@
     const path = link.dataset.path;
     if (!routes[path]) return;
     event.preventDefault();
-    window.location.href = routes[path];
+    window.location.href = location.hostname.endsWith("github.io") ? routes[path] + (routes[path].includes("?") ? "&" : "?") + "v=20261007c" : routes[path];
   });
 })();
