@@ -245,6 +245,59 @@
     updateHeader(user);
   }
 
+  async function initMobileHome() {
+    if (page !== "index.html") return;
+
+    const mobile = document.querySelector(".mobile-view");
+    if (!mobile) return;
+
+    const heading = [...mobile.querySelectorAll("h2")].find((node) => {
+      return node.textContent.trim() === "Новые материалы";
+    });
+    const section = heading?.closest("section");
+    if (!section) return;
+
+    const container = [...section.children].find((child) => {
+      return child !== heading?.parentElement &&
+        child.querySelector("h3") &&
+        !child.querySelector("h2");
+    });
+    if (!container) return;
+
+    const result = await api("materials", { query: "?limit=4" });
+    const materials = (result.materials || []).slice(0, 4);
+
+    container.className = "flex flex-col gap-space-md";
+    container.innerHTML = materials.length
+      ? materials.map((material) => cardHtml(material)).join("")
+      : '<div class="w-full rounded-2xl bg-surface-container-lowest p-space-lg text-center shadow-sm">' +
+          '<span class="material-symbols-outlined text-[32px] text-outline">perm_media</span>' +
+          '<p class="font-body-md text-body-md text-on-surface-variant mt-2">Материалов пока нет</p>' +
+        '</div>';
+
+    container.querySelectorAll(".mg-card").forEach((card) => {
+      const type = card.dataset.materialType;
+      const badge = card.querySelector(".mg-card__type");
+      const save = card.querySelector(".mg-card__save");
+      const saveIcon = save?.querySelector(".material-symbols-outlined");
+
+      if (type === "image") {
+        if (badge) badge.textContent = "ФОТО";
+        if (save) save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      } else if (type === "video") {
+        if (badge) badge.textContent = "ВИДЕО";
+      } else if (type === "audio") {
+        if (badge) badge.textContent = "АУДИО";
+      }
+    });
+
+    const allLink = [...section.querySelectorAll("a")].find((link) =>
+      /^Все\s*\(/i.test(link.textContent.trim())
+    );
+    if (allLink) allLink.textContent = "Все (" + Number(result.total || materials.length) + ")";
+  }
+
   function initHeaderSearch() {
     document.querySelectorAll("header").forEach((header) => {
       header.querySelectorAll("input").forEach((input) => {
@@ -358,4 +411,5 @@
 
   initUser();
   initHeaderSearch();
+  initMobileHome().catch((error) => toast(error.message, true));
 })();

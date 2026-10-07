@@ -1,6 +1,8 @@
 (() => {
   const inPages = window.location.pathname.includes('/pages/');
   const root = inPages ? '../' : './';
+  document.documentElement.classList.remove('mg-mobile-menu-open');
+
   const routes = {
     'main': root + 'index.html',
     'glavnaya': root + 'index.html',
@@ -54,7 +56,8 @@
     if (!mobile || mobile.querySelector('.mg-mobile-nav')) return;
 
     const pathname = window.location.pathname.toLowerCase();
-    const active = pathname.endsWith('/images.html') ? 'images'
+    const active = pathname.endsWith('/gallery.html') ? 'gallery'
+      : pathname.endsWith('/images.html') ? 'images'
       : pathname.endsWith('/videos.html') ? 'videos'
       : pathname.endsWith('/search.html') ? 'search'
       : pathname.endsWith('/audio.html') ? 'audio'
@@ -84,11 +87,140 @@
     mobile.appendChild(nav);
   };
 
+  const ensureMobileMenu = () => {
+    const mobile = document.querySelector('.mobile-view');
+    if (!mobile || mobile.querySelector('.mg-mobile-menu')) return;
+
+    const menuButton = mobile.querySelector('header button[aria-label="Меню"]');
+    if (!menuButton) return;
+
+    const menu = document.createElement('div');
+    menu.className = 'mg-mobile-menu';
+    menu.hidden = true;
+    menu.innerHTML =
+      '<button class="mg-mobile-menu__backdrop" type="button" data-mobile-menu-close aria-label="Закрыть меню"></button>' +
+      '<div class="mg-mobile-menu__panel" role="dialog" aria-modal="true" aria-label="Навигация">' +
+        '<div class="mg-mobile-menu__header">' +
+          '<strong>Навигация</strong>' +
+          '<button class="mg-mobile-menu__close" type="button" data-mobile-menu-close aria-label="Закрыть"><span class="material-symbols-outlined">close</span></button>' +
+        '</div>' +
+        '<a class="mg-mobile-menu__item" data-path="main" href="#"><span class="material-symbols-outlined">home</span><span>Главная</span></a>' +
+        '<a class="mg-mobile-menu__item" data-path="gallery" href="#"><span class="material-symbols-outlined">photo_library</span><span>Галерея</span></a>' +
+        '<a class="mg-mobile-menu__item" data-path="add-asset" href="#"><span class="material-symbols-outlined">add_circle</span><span>Добавить материал</span></a>' +
+        '<a class="mg-mobile-menu__item" data-path="profile" href="#"><span class="material-symbols-outlined">person</span><span>Личный кабинет</span></a>' +
+      '</div>';
+
+    mobile.appendChild(menu);
+
+    const open = () => {
+      menu.hidden = false;
+      menuButton.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('mg-mobile-menu-open');
+    };
+
+    const close = () => {
+      menu.hidden = true;
+      menuButton.setAttribute('aria-expanded', 'false');
+      document.documentElement.classList.remove('mg-mobile-menu-open');
+    };
+
+    menuButton.type = 'button';
+    menuButton.setAttribute('aria-expanded', 'false');
+
+    menuButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      menu.hidden ? open() : close();
+    });
+
+    menu.querySelectorAll('[data-mobile-menu-close]').forEach((button) => {
+      button.addEventListener('click', close);
+    });
+
+    menu.querySelectorAll('a[data-path]').forEach((link) => {
+      link.addEventListener('click', close);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !menu.hidden) close();
+    });
+  };
+
+  const ensureMobileHeaderActions = () => {
+    const mobile = document.querySelector('.mobile-view');
+    if (!mobile) return;
+
+    mobile.querySelectorAll('header [aria-label="Поиск"]').forEach((control) => {
+      if (!control.dataset.path) control.dataset.path = 'search';
+      if (control.tagName === 'BUTTON') control.type = 'button';
+    });
+
+    mobile.querySelectorAll('header [aria-label="Профиль"]').forEach((control) => {
+      if (!control.dataset.path) control.dataset.path = 'profile';
+    });
+
+    const personIcon = [...mobile.querySelectorAll('header .material-symbols-outlined')].find((icon) => {
+      return icon.textContent.trim() === 'person';
+    });
+    const personControl = personIcon?.closest('a,button,div');
+    if (personControl && !personControl.dataset.path) {
+      personControl.dataset.path = 'profile';
+      personControl.setAttribute('role', 'link');
+      personControl.tabIndex = 0;
+    }
+
+    [...mobile.querySelectorAll('button')].forEach((button) => {
+      if (button.dataset.path) return;
+      if (button.textContent.replace(/\s+/g, ' ').trim() === 'Добавить') {
+        button.dataset.path = 'add-asset';
+        button.type = 'button';
+      }
+    });
+  };
+
   ensureDesktopSearchLink();
   ensureMobileNav();
+  ensureMobileMenu();
+  ensureMobileHeaderActions();
 
-  document.addEventListener('click', (event) => {
-    const link = event.target.closest('a[data-path]');
+  window.addEventListener('pageshow', () => {
+    document.documentElement.classList.remove('mg-mobile-menu-open');
+    document.querySelectorAll('.mg-mobile-menu').forEach((menu) => {
+      menu.hidden = true;
+    });
+    document.querySelectorAll('.mobile-view header button[aria-label="Меню"]').forEach((button) => {
+      button.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', async (event) => {
+    const shareButton = event.target.closest('.mobile-view button');
+    const shareIcon = shareButton?.querySelector('.material-symbols-outlined')?.textContent.trim();
+
+    if (shareButton && shareIcon === 'share') {
+      event.preventDefault();
+
+      const shareData = {
+        title: document.title || 'MediaGallery',
+        url: window.location.href
+      };
+
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+        } else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(shareData.url);
+          window.MG?.toast?.('Ссылка скопирована');
+        }
+      } catch (error) {
+        if (error?.name !== 'AbortError') {
+          window.MG?.toast?.('Не удалось поделиться ссылкой', true);
+        }
+      }
+      return;
+    }
+
+    const link = event.target.closest('[data-path]');
     if (!link) return;
     const path = link.dataset.path;
     if (!routes[path]) return;
