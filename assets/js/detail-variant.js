@@ -365,11 +365,12 @@
   }
 
   function restoreNavigation(scope) {
+    const mobileScope = scope.classList.contains("mobile-view");
     const headerLabels = {
       "gallery": "Галерея",
       "galereya": "Галерея",
-      "images": "Изображения",
-      "izobrazheniya": "Изображения",
+      "images": mobileScope ? "Фото" : "Изображения",
+      "izobrazheniya": mobileScope ? "Фото" : "Изображения",
       "videos": "Видео",
       "video": "Видео",
       "audio": "Аудио"

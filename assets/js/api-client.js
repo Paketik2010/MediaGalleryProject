@@ -43,10 +43,8 @@
     const data = await loadStaticData();
     const params = new URLSearchParams((options.query || "").replace(/^\?/, ""));
     const method = (options.method || "GET").toUpperCase();
-
     if (name === "me") return { user: null };
     if (name === "categories") return { categories: data.categories || [] };
-
     if (name === "materials") {
       if (params.get("mine") === "1") throw staticError("Требуется авторизация", 401);
       let materials = [...(data.materials || [])];
@@ -65,14 +63,12 @@
       const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 100;
       return { materials: materials.slice(0, limit), total };
     }
-
     if (name === "material") {
       const id = Number(params.get("id") || options.json?.id || 0);
       const material = (data.materials || []).find((item) => Number(item.id) === id);
       if (!material) throw staticError("Материал не найден", 404);
       return { material };
     }
-
     if (name === "logout" && method === "POST") return { success: true };
     if (name === "admin_materials" || name === "admin_users") throw staticError("Нет доступа", 403);
     if (method !== "GET") throw staticError("Демо-версия доступна только для просмотра", 401);
@@ -229,12 +225,17 @@
         const save = card.querySelector(".mg-card__save");
         const saveIcon = save?.querySelector(".material-symbols-outlined");
 
+        if (save && !save.hasAttribute("data-api-delete")) {
+          save.setAttribute("aria-label", "В избранное");
+          if (saveIcon) saveIcon.textContent = "favorite_border";
+        }
+
         if (type === "image") {
           if (badge) badge.textContent = "ФОТО";
-          if (save) save.setAttribute("aria-label", "В избранное");
-          if (saveIcon) saveIcon.textContent = "favorite_border";
         } else if (type === "video") {
           if (badge) badge.textContent = "ВИДЕО";
+        } else if (type === "audio") {
+          if (badge) badge.textContent = "АУДИО";
         }
       });
     }
@@ -339,10 +340,13 @@
       const save = card.querySelector(".mg-card__save");
       const saveIcon = save?.querySelector(".material-symbols-outlined");
 
+      if (save && !save.hasAttribute("data-api-delete")) {
+        save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      }
+
       if (type === "image") {
         if (badge) badge.textContent = "ФОТО";
-        if (save) save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
       } else if (type === "video") {
         if (badge) badge.textContent = "ВИДЕО";
       } else if (type === "audio") {
