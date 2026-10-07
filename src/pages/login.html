@@ -44,7 +44,7 @@
 <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px] pointer-events-none">
               person
             </span>
-<input autocomplete="username" class="w-full h-11 pl-11 pr-3.5 rounded-[10px] bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md shadow-sm transition-all focus:bg-surface-container-lowest focus:outline-none" id="login-identifier" name="identifier" placeholder="alexey@example.com или alex_smirnov" required="" type="text" value="alex_smirnov"/>
+<input autocomplete="username" class="w-full h-11 pl-11 pr-3.5 rounded-[10px] bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-md text-body-md shadow-sm transition-all focus:bg-surface-container-lowest focus:outline-none" id="login-identifier" name="identifier" placeholder="alexey@example.com или alex_smirnov" required="" type="text"/>
 </div>
 </div>
 <!-- Password Input -->
@@ -147,7 +147,7 @@
 <label class="font-label-md text-label-md text-on-surface-variant" for="login-identifier">Email или имя пользователя</label>
 <div class="relative flex items-center">
 <span class="material-symbols-outlined absolute left-3 text-outline text-[20px] pointer-events-none">alternate_email</span>
-<input autocomplete="username" class="w-full h-11 pl-10 pr-3 bg-surface-container-lowest text-on-surface rounded-lg font-body-md text-body-md shadow-sm outline-none transition-all placeholder:text-outline/60 focus:bg-surface-bright" id="login-identifier" name="identifier" placeholder="name@example.com" type="text" value="alex.media"/>
+<input autocomplete="username" class="w-full h-11 pl-10 pr-3 bg-surface-container-lowest text-on-surface rounded-lg font-body-md text-body-md shadow-sm outline-none transition-all placeholder:text-outline/60 focus:bg-surface-bright" id="login-identifier" name="identifier" placeholder="name@example.com" type="text"/>
 </div>
 </div>
 <div class="flex flex-col gap-1.5">
@@ -234,14 +234,5 @@
       });
     }
 
-    const form = document.getElementById('login-form');
-    const errorBanner = document.getElementById('error-banner');
-    if (form && errorBanner) {
-      form.addEventListener('submit', function() {
-        errorBanner.style.display = 'flex';
-        errorBanner.classList.add('animate-bounce');
-        setTimeout(() => errorBanner.classList.remove('animate-bounce'), 1000);
-      });
-    }
   })();
-</script></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=7"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>
+</script></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=7"></script><script src="../assets/js/api-client.js?v=2"></script><script src="../assets/js/catalog-api.js?v=2"></script><script src="../assets/js/auth-pages.js?v=2"></script><script src="../assets/js/profile-api.js?v=3"></script><script src="../assets/js/upload-api.js?v=1"></script><script src="../assets/js/detail-admin-api.js?v=1"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>
