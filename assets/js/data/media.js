@@ -1,9 +1,9 @@
 export const images = {
-  mountain: "/assets/media/media-119.jpg",
-  concrete: "/assets/media/media-098.jpg",
-  video: "/assets/media/media-058.jpg",
-  audio: "/assets/media/media-040.jpg",
-  avatar: "/assets/media/media-080.jpg"
+  mountain: "/MediaGalleryProject/assets/media/media-119.jpg",
+  concrete: "/MediaGalleryProject/assets/media/media-098.jpg",
+  video: "/MediaGalleryProject/assets/media/media-058.jpg",
+  audio: "/MediaGalleryProject/assets/media/media-040.jpg",
+  avatar: "/MediaGalleryProject/assets/media/media-080.jpg"
 };
 
 export const mediaItems = [

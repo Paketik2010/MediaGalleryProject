@@ -16,7 +16,87 @@
     return (inPages ? "../uploads/" : "uploads/") + url.split("/").pop();
   }
 
+  let staticDataPromise;
+
+  function staticPagesMode() {
+    return location.hostname.endsWith("github.io") || location.port === "8892";
+  }
+
+  function staticError(message, status) {
+    const error = new Error(message);
+    error.status = status;
+    return error;
+  }
+
+  async function loadStaticData() {
+    if (!staticDataPromise) {
+      const url = (inPages ? "../" : "") + "assets/data/static-api.json";
+      staticDataPromise = fetch(url, { cache: "no-store" }).then((response) => {
+        if (!response.ok) throw staticError("Static data unavailable", response.status);
+        return response.json();
+      });
+    }
+    return staticDataPromise;
+  }
+
+  async function staticApi(name, options = {}) {
+    const data = await loadStaticData();
+    const params = new URLSearchParams((options.query || "").replace(/^\?/, ""));
+    const method = (options.method || "GET").toUpperCase();
+
+    if (name === "me") return { user: null };
+    if (name === "categories") return { categories: data.categories || [] };
+
+    if (name === "materials") {
+      if (params.get("mine") === "1") throw staticError("Требуется авторизация", 401);
+
+      let materials = [...(data.materials || [])];
+      const type = (params.get("type") || "").toLowerCase();
+      const category = (params.get("category") || "").trim().toLowerCase();
+      const q = (params.get("q") || "").trim().toLowerCase();
+      const sort = (params.get("sort") || "newest").toLowerCase();
+
+      if (type) materials = materials.filter((item) => item.type === type);
+      if (category) {
+        materials = materials.filter((item) =>
+          String(item.category || "").toLowerCase() === category ||
+          String(item.categorySlug || "").toLowerCase() === category
+        );
+      }
+      if (q) {
+        materials = materials.filter((item) => {
+          const haystack = [item.title,item.description,...(item.tags || []),item.category,item.author?.name,item.author?.username].join(" ").toLowerCase();
+          return haystack.includes(q);
+        });
+      }
+
+      if (sort === "oldest") materials.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      else if (sort === "name") materials.sort((a, b) => String(a.title || "").localeCompare(String(b.title || ""), "ru"));
+      else if (sort === "popular") materials.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
+      else if (sort !== "newest") materials = [...materials];
+
+      const total = materials.length;
+      const parsedLimit = Number.parseInt(params.get("limit") || "100", 10);
+      const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 100;
+      return { materials: materials.slice(0, limit), total };
+    }
+
+    if (name === "material") {
+      const id = Number(params.get("id") || options.json?.id || 0);
+      const material = (data.materials || []).find((item) => Number(item.id) === id);
+      if (!material) throw staticError("Материал не найден", 404);
+      return { material };
+    }
+
+    if (name === "logout" && method === "POST") return { success: true };
+    if (name === "admin_materials" || name === "admin_users") throw staticError("Нет доступа", 403);
+    if (method !== "GET") throw staticError("Демо-версия доступна только для просмотра", 401);
+    throw staticError("Страница не найдена", 404);
+  }
+
   async function api(name, options = {}) {
+    if (staticPagesMode()) return staticApi(name, options);
+
     const response = await fetch(apiFile(name) + (options.query || ""), {
       method: options.method || "GET",
       headers: options.json ? { "Content-Type": "application/json" } : undefined,
@@ -25,9 +105,7 @@
     });
 
     let data = {};
-    try {
-      data = await response.json();
-    } catch (_) {}
+    try { data = await response.json(); } catch (_) {}
 
     if (!response.ok) {
       const error = new Error(data.error || "Ошибка запроса");
@@ -38,7 +116,6 @@
 
     return data;
   }
-
   function esc(value) {
     const div = document.createElement("div");
     div.textContent = value == null ? "" : String(value);
