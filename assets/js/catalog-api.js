@@ -120,11 +120,6 @@
       const applyButton = scope.querySelector("#applyFiltersBtn");
       if (applyButton) applyButton.textContent = "Применить (" + total + ")";
 
-      scope.querySelectorAll("button").forEach((button) => {
-        if (/Загрузить еще|Показать еще/i.test(button.textContent)) {
-          button.style.display = "none";
-        }
-      });
       return;
     }
 
@@ -154,11 +149,6 @@
       }
     });
 
-    scope.querySelectorAll("button").forEach((button) => {
-      if (/Загрузить еще|Показать еще/i.test(button.textContent)) {
-        button.style.display = "none";
-      }
-    });
   }
 
   function normalizeMobileCards(container) {
@@ -169,8 +159,8 @@
       const saveIcon = save?.querySelector(".material-symbols-outlined");
 
       if (save && !save.hasAttribute("data-api-delete")) {
-        save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
+        save.setAttribute("aria-label", "Сохранить");
+        if (saveIcon) saveIcon.textContent = "bookmark_border";
       }
 
       if (type === "image") {
@@ -215,7 +205,7 @@
       category: "",
       categories: new Set(),
       sort: "newest",
-      limit: page === "gallery.html" ? 6 : Number.POSITIVE_INFINITY,
+      limit: page === "gallery.html" ? 6 : 3,
       list: false
     };
 
@@ -226,18 +216,51 @@
           /поиск/i.test(input.placeholder || "")
         );
     const clearSearch = scope.querySelector("#clearSearchBtn");
-    const loadMore = scope.querySelector("#loadMoreBtn");
+    let loadMore = scope.querySelector("#loadMoreBtn") || [...scope.querySelectorAll("button")].find((button) =>
+      /Загрузить\s+(?:еще|ещё)|Показать\s+(?:еще|ещё)/i.test(clean(button.textContent))
+    );
     const status = [...scope.querySelectorAll("p,span")].find((node) =>
       /^Показано\s+/i.test(clean(node.textContent))
     );
 
     const paginationRoot = status?.parentElement;
-    if (paginationRoot) {
-      [...paginationRoot.children].forEach((child) => {
-        if (child !== status && child.querySelectorAll?.("button").length) {
-          child.style.display = "none";
-        }
-      });
+    let percentLabel = paginationRoot?.querySelector("[data-mobile-page-percent]") ||
+      paginationRoot?.querySelector(".font-semibold.text-primary");
+
+    if (loadMore) {
+      loadMore.id = "loadMoreBtn";
+      loadMore.type = "button";
+      loadMore.className = "mt-2 w-full h-12 bg-surface-container-lowest hover:bg-surface-container text-primary font-label-lg text-label-lg rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all";
+      loadMore.innerHTML =
+        '<span class="material-symbols-outlined text-[20px]">refresh</span>' +
+        '<span>Загрузить еще материалы</span>';
+    }
+
+    if (paginationRoot && page !== "gallery.html" && status && loadMore) {
+      const progressTrack = paginationRoot.querySelector(".w-full.bg-surface-container");
+      const panel = document.createElement("div");
+      panel.className = "w-full flex flex-col items-center gap-space-sm bg-surface-container-low p-space-md rounded-2xl";
+
+      const topRow = document.createElement("div");
+      topRow.className = "w-full flex items-center justify-between font-label-caps text-label-caps text-on-surface-variant";
+
+      percentLabel = document.createElement("span");
+      percentLabel.dataset.mobilePagePercent = "1";
+      percentLabel.className = "font-semibold text-primary";
+      percentLabel.textContent = "0%";
+
+      status.className = "";
+      topRow.append(status, percentLabel);
+      panel.appendChild(topRow);
+
+      if (progressTrack) {
+        progressTrack.className = "w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden";
+        panel.appendChild(progressTrack);
+      }
+
+      panel.appendChild(loadMore);
+      paginationRoot.className = "px-gutter-mobile mt-space-lg mb-space-md";
+      paginationRoot.replaceChildren(panel);
     }
 
     function filteredList(categoryOverride = null) {
@@ -289,6 +312,17 @@
               : "материалов";
         status.textContent = "Показано " + shown + " из " + total + " " + noun;
       }
+
+      if (paginationRoot) {
+        const percent = total ? Math.round(shown / total * 100) : 0;
+        const progress = paginationRoot.querySelector(".bg-primary.h-full");
+        if (progress) {
+          progress.style.width = percent + "%";
+        }
+        if (percentLabel) {
+          percentLabel.textContent = percent + "%";
+        }
+      }
     }
 
     function render() {
@@ -316,7 +350,7 @@
     if (search) {
       search.addEventListener("input", () => {
         state.query = search.value.trim();
-        state.limit = page === "gallery.html" ? 6 : Number.POSITIVE_INFINITY;
+        state.limit = page === "gallery.html" ? 6 : 3;
         render();
       });
     }
@@ -324,13 +358,13 @@
     clearSearch?.addEventListener("click", () => {
       state.query = "";
       if (search) search.value = "";
-      state.limit = page === "gallery.html" ? 6 : Number.POSITIVE_INFINITY;
+      state.limit = page === "gallery.html" ? 6 : 3;
       render();
     });
 
     if (loadMore) {
       loadMore.addEventListener("click", () => {
-        state.limit += 6;
+        state.limit += page === "gallery.html" ? 6 : 3;
         render();
       });
     }
@@ -689,6 +723,7 @@
       if (!input || !firstCard) return;
 
       const container = firstCard.parentElement;
+      const isMobile = scope.classList.contains("mobile-view");
       const typeButtons = [...scope.querySelectorAll("button")].filter((button) => {
         return /Все\s*\(\d+\)|Изображения\s*\(\d+\)|Видео\s*\(\d+\)|Аудио\s*\(\d+\)/i.test(button.textContent);
       });
@@ -696,9 +731,40 @@
       const findButton = [...scope.querySelectorAll("button")].find((button) => {
         return button.textContent.trim() === "Найти";
       });
-      const loadMoreButton = [...scope.querySelectorAll("button")].find((button) => {
+      const desktopLoadMoreButton = [...scope.querySelectorAll("button")].find((button) => {
         return /Показать еще/i.test(button.textContent);
       });
+
+      let mobilePager = null;
+      let mobileLoadMoreButton = null;
+      let mobileStatus = null;
+      let mobilePercent = null;
+      let mobileProgress = null;
+      let visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
+
+      if (isMobile) {
+        mobilePager = document.createElement("div");
+        mobilePager.className = "px-gutter-mobile mt-space-lg mb-space-md";
+        mobilePager.innerHTML =
+          '<div class="w-full flex flex-col items-center gap-space-sm bg-surface-container-low p-space-md rounded-2xl">' +
+            '<div class="w-full flex items-center justify-between font-label-caps text-label-caps text-on-surface-variant">' +
+              '<span data-mobile-search-status>Показано 0 из 0 материалов</span>' +
+              '<span data-mobile-search-percent class="font-semibold text-primary">0%</span>' +
+            '</div>' +
+            '<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">' +
+              '<div data-mobile-search-progress class="h-full bg-primary rounded-full transition-all duration-500" style="width:0%"></div>' +
+            '</div>' +
+            '<button data-mobile-search-load type="button" class="mt-2 w-full h-12 bg-surface-container-lowest hover:bg-surface-container text-primary font-label-lg text-label-lg rounded-xl shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-all">' +
+              '<span class="material-symbols-outlined text-[20px]">refresh</span>' +
+              '<span>Загрузить еще материалы</span>' +
+            '</button>' +
+          '</div>';
+        container.insertAdjacentElement("afterend", mobilePager);
+        mobileLoadMoreButton = mobilePager.querySelector("[data-mobile-search-load]");
+        mobileStatus = mobilePager.querySelector("[data-mobile-search-status]");
+        mobilePercent = mobilePager.querySelector("[data-mobile-search-percent]");
+        mobileProgress = mobilePager.querySelector("[data-mobile-search-progress]");
+      }
 
       let activeType = "";
       let timer;
@@ -721,6 +787,7 @@
 
         button.addEventListener("click", () => {
           activeType = type;
+          visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
           typeButtons.forEach((item) => {
             item.classList.remove("bg-primary-container", "text-on-primary");
           });
@@ -746,16 +813,37 @@
         const query = params.toString() ? "?" + params.toString() : "";
         const result = await MG.api("materials", { query });
 
+        const shownMaterials = isMobile
+          ? result.materials.slice(0, visibleLimit)
+          : result.materials;
+
         container.innerHTML = result.materials.length
-          ? result.materials.map((item) => MG.cardHtml(item)).join("")
+          ? shownMaterials.map((item) => MG.cardHtml(item)).join("")
           : '<div class="col-span-full w-full rounded-2xl bg-surface-container-lowest p-space-xl text-center shadow-sm">' +
               '<span class="material-symbols-outlined text-[36px] text-outline">search_off</span>' +
               '<h3 class="font-headline-sm text-headline-sm text-on-surface mt-2">Ничего не найдено</h3>' +
               '<p class="font-body-md text-body-md text-on-surface-variant mt-1">Попробуйте изменить запрос или фильтры.</p>' +
             '</div>';
 
-        if (loadMoreButton) {
-          loadMoreButton.style.display = result.materials.length ? "" : "none";
+        if (isMobile && result.materials.length) {
+          normalizeMobileCards(container);
+        }
+
+        if (isMobile && mobilePager) {
+          const total = result.materials.length;
+          const shown = shownMaterials.length;
+          const percent = total ? Math.round(shown / total * 100) : 0;
+          mobilePager.style.display = total ? "" : "none";
+          if (mobileStatus) mobileStatus.textContent = "Показано " + shown + " из " + total + " материалов";
+          if (mobilePercent) mobilePercent.textContent = percent + "%";
+          if (mobileProgress) mobileProgress.style.width = percent + "%";
+          if (mobileLoadMoreButton) {
+            const canLoad = shown < total;
+            mobileLoadMoreButton.style.display = canLoad ? "" : "none";
+            mobileLoadMoreButton.hidden = !canLoad;
+          }
+        } else if (desktopLoadMoreButton) {
+          desktopLoadMoreButton.style.display = result.materials.length ? "" : "none";
         }
 
         searchStats(scope, result.total, q);
@@ -765,6 +853,7 @@
 
       input.addEventListener("input", () => {
         clearTimeout(timer);
+        visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
         timer = setTimeout(runSearch, 250);
       });
 
@@ -775,8 +864,18 @@
         }
       });
 
-      category?.addEventListener("change", runSearch);
-      findButton?.addEventListener("click", runSearch);
+      category?.addEventListener("change", () => {
+        visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
+        runSearch();
+      });
+      findButton?.addEventListener("click", () => {
+        visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
+        runSearch();
+      });
+      mobileLoadMoreButton?.addEventListener("click", () => {
+        visibleLimit += 6;
+        runSearch();
+      });
 
       runSearch();
     });
