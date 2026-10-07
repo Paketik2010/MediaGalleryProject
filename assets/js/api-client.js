@@ -19,7 +19,7 @@
   let staticDataPromise;
 
   function staticPagesMode() {
-    return location.hostname.endsWith("github.io") || location.port === "8892";
+    return location.hostname.endsWith("github.io");
   }
 
   function staticError(message, status) {
@@ -49,32 +49,17 @@
 
     if (name === "materials") {
       if (params.get("mine") === "1") throw staticError("Требуется авторизация", 401);
-
       let materials = [...(data.materials || [])];
       const type = (params.get("type") || "").toLowerCase();
       const category = (params.get("category") || "").trim().toLowerCase();
       const q = (params.get("q") || "").trim().toLowerCase();
       const sort = (params.get("sort") || "newest").toLowerCase();
-
       if (type) materials = materials.filter((item) => item.type === type);
-      if (category) {
-        materials = materials.filter((item) =>
-          String(item.category || "").toLowerCase() === category ||
-          String(item.categorySlug || "").toLowerCase() === category
-        );
-      }
-      if (q) {
-        materials = materials.filter((item) => {
-          const haystack = [item.title,item.description,...(item.tags || []),item.category,item.author?.name,item.author?.username].join(" ").toLowerCase();
-          return haystack.includes(q);
-        });
-      }
-
-      if (sort === "oldest") materials.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-      else if (sort === "name") materials.sort((a, b) => String(a.title || "").localeCompare(String(b.title || ""), "ru"));
-      else if (sort === "popular") materials.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
-      else if (sort !== "newest") materials = [...materials];
-
+      if (category) materials = materials.filter((item) => String(item.category || "").toLowerCase() === category || String(item.categorySlug || "").toLowerCase() === category);
+      if (q) materials = materials.filter((item) => [item.title,item.description,...(item.tags || []),item.category,item.author?.name,item.author?.username].join(" ").toLowerCase().includes(q));
+      if (sort === "oldest") materials.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+      else if (sort === "name") materials.sort((a,b) => String(a.title || "").localeCompare(String(b.title || ""), "ru"));
+      else if (sort === "popular") materials.sort((a,b) => Number(b.views || 0) - Number(a.views || 0));
       const total = materials.length;
       const parsedLimit = Number.parseInt(params.get("limit") || "100", 10);
       const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 100;
@@ -96,24 +81,20 @@
 
   async function api(name, options = {}) {
     if (staticPagesMode()) return staticApi(name, options);
-
     const response = await fetch(apiFile(name) + (options.query || ""), {
       method: options.method || "GET",
       headers: options.json ? { "Content-Type": "application/json" } : undefined,
       body: options.form || (options.json ? JSON.stringify(options.json) : undefined),
       credentials: "same-origin"
     });
-
     let data = {};
     try { data = await response.json(); } catch (_) {}
-
     if (!response.ok) {
       const error = new Error(data.error || "Ошибка запроса");
       error.status = response.status;
       error.data = data;
       throw error;
     }
-
     return data;
   }
   function esc(value) {
@@ -322,6 +303,59 @@
     updateHeader(user);
   }
 
+  async function initMobileHome() {
+    if (page !== "index.html") return;
+
+    const mobile = document.querySelector(".mobile-view");
+    if (!mobile) return;
+
+    const heading = [...mobile.querySelectorAll("h2")].find((node) => {
+      return node.textContent.trim() === "Новые материалы";
+    });
+    const section = heading?.closest("section");
+    if (!section) return;
+
+    const container = [...section.children].find((child) => {
+      return child !== heading?.parentElement &&
+        child.querySelector("h3") &&
+        !child.querySelector("h2");
+    });
+    if (!container) return;
+
+    const result = await api("materials", { query: "?limit=4" });
+    const materials = (result.materials || []).slice(0, 4);
+
+    container.className = "flex flex-col gap-space-md";
+    container.innerHTML = materials.length
+      ? materials.map((material) => cardHtml(material)).join("")
+      : '<div class="w-full rounded-2xl bg-surface-container-lowest p-space-lg text-center shadow-sm">' +
+          '<span class="material-symbols-outlined text-[32px] text-outline">perm_media</span>' +
+          '<p class="font-body-md text-body-md text-on-surface-variant mt-2">Материалов пока нет</p>' +
+        '</div>';
+
+    container.querySelectorAll(".mg-card").forEach((card) => {
+      const type = card.dataset.materialType;
+      const badge = card.querySelector(".mg-card__type");
+      const save = card.querySelector(".mg-card__save");
+      const saveIcon = save?.querySelector(".material-symbols-outlined");
+
+      if (type === "image") {
+        if (badge) badge.textContent = "ФОТО";
+        if (save) save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      } else if (type === "video") {
+        if (badge) badge.textContent = "ВИДЕО";
+      } else if (type === "audio") {
+        if (badge) badge.textContent = "АУДИО";
+      }
+    });
+
+    const allLink = [...section.querySelectorAll("a")].find((link) =>
+      /^Все\s*\(/i.test(link.textContent.trim())
+    );
+    if (allLink) allLink.textContent = "Все (" + Number(result.total || materials.length) + ")";
+  }
+
   function initHeaderSearch() {
     document.querySelectorAll("header").forEach((header) => {
       header.querySelectorAll("input").forEach((input) => {
@@ -435,4 +469,5 @@
 
   initUser();
   initHeaderSearch();
+  initMobileHome().catch((error) => toast(error.message, true));
 })();

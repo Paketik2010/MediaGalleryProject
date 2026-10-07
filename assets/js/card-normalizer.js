@@ -310,7 +310,8 @@
     if (
       path.indexOf("/audio") !== -1 ||
       path.indexOf("/images") !== -1 ||
-      path.indexOf("/videos") !== -1
+      path.indexOf("/videos") !== -1 ||
+      path.indexOf("/profile") !== -1
     ) return true;
     return false;
   }
@@ -463,7 +464,13 @@
 
   function run() {
     var path = location.pathname.toLowerCase();
-    var needsMobileCatalogCards = path.endsWith("/images.html") || path.endsWith("/videos.html");
+    var needsMobileCatalogCards =
+      path.endsWith("/gallery.html") ||
+      path.endsWith("/images.html") ||
+      path.endsWith("/videos.html") ||
+      path.endsWith("/audio.html") ||
+      path.endsWith("/search.html") ||
+      path.endsWith("/profile.html");
     var selector = needsMobileCatalogCards ? ".desktop-view, .mobile-view" : ".desktop-view";
 
     document.querySelectorAll(selector).forEach(function(scope) {

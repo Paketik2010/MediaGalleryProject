@@ -4,7 +4,7 @@
   function humanSize(bytes) {
     const value = Number(bytes || 0);
 
-    if (!value) return "—";
+    if (!value) return "Не определён";
     if (value < 1024 * 1024) return Math.max(1, Math.round(value / 1024)) + " КБ";
     if (value < 1024 * 1024 * 1024) return (value / 1024 / 1024).toFixed(1) + " МБ";
 
@@ -30,15 +30,73 @@
     return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
   }
 
-  function formatName(material) {
-    const name = String(material.originalName || "");
-    const ext = name.includes(".") ? name.split(".").pop().toUpperCase() : "";
+  function formatName(material, meta = {}) {
+    const candidates = [
+      String(material.originalName || ""),
+      String(material.fileUrl || ""),
+      String(material.sourceUrl || "")
+    ];
 
-    if (ext) return ext;
-    if (material.mimeType) return material.mimeType;
+    for (const candidate of candidates) {
+      const clean = candidate.split(/[?#]/)[0];
+      const ext = clean.includes(".") ? clean.split(".").pop().toUpperCase() : "";
 
-    return material.type === "image" ? "Изображение" :
-      material.type === "audio" ? "Аудио" : "Видео";
+      if (/^(JPG|JPEG|PNG|WEBP|GIF|MP3|WAV|M4A|AAC|FLAC|OGG|OGA|MP4|WEBM|OGV|MOV)$/.test(ext)) {
+        return ext === "JPEG" ? "JPG" : ext;
+      }
+    }
+
+    const mime = String(material.mimeType || meta.mimeType || "").toLowerCase();
+    const mimeFormats = {
+      "image/jpeg": "JPG",
+      "image/jpg": "JPG",
+      "image/png": "PNG",
+      "image/webp": "WEBP",
+      "image/gif": "GIF",
+      "audio/mpeg": "MP3",
+      "audio/mp3": "MP3",
+      "audio/wav": "WAV",
+      "audio/x-wav": "WAV",
+      "audio/mp4": "M4A",
+      "audio/x-m4a": "M4A",
+      "audio/aac": "AAC",
+      "audio/flac": "FLAC",
+      "audio/ogg": "OGG",
+      "application/ogg": "OGG",
+      "video/mp4": "MP4",
+      "video/webm": "WEBM",
+      "video/ogg": "OGV",
+      "video/quicktime": "MOV"
+    };
+
+    if (mimeFormats[mime]) return mimeFormats[mime];
+
+    return material.type === "image" ? "JPG" :
+      material.type === "audio" ? "MP3" : "MP4";
+  }
+
+  async function probeResourceMetadata(material) {
+    const source = MG.mediaUrl(material.fileUrl || material.sourceUrl || "");
+    if (!source) return {};
+
+    try {
+      const response = await fetch(source, {
+        method: "HEAD",
+        cache: "force-cache"
+      });
+
+      if (!response.ok) return {};
+
+      const sizeBytes = Number(response.headers.get("content-length") || 0);
+      const mimeType = String(response.headers.get("content-type") || "").split(";")[0].trim();
+
+      return {
+        sizeBytes: Number.isFinite(sizeBytes) && sizeBytes > 0 ? sizeBytes : 0,
+        mimeType
+      };
+    } catch (_) {
+      return {};
+    }
   }
 
   function humanDuration(seconds) {
@@ -324,7 +382,10 @@
     });
 
     [...scope.querySelectorAll("button")].forEach((button) => {
-      if (button.textContent.trim() === "Редактировать") button.style.display = "none";
+      const text = button.textContent.trim();
+      if (text === "Редактировать" || text === "Подписаться") {
+        button.style.display = "none";
+      }
     });
   }
 
@@ -507,9 +568,10 @@
   function applyTechnicalSpecs(scope, material, meta = {}) {
     const isMobile = scope.classList.contains("mobile-view");
     const info = MG.typeInfo(material.type);
-    const format = formatName(material);
+    const format = formatName(material, meta);
     const resolution = resolutionText(meta.width, meta.height);
     const duration = humanDuration(meta.duration);
+    const sizeBytes = Number(material.sizeBytes || meta.sizeBytes || 0);
 
     if (!isMobile) {
       const aboutTitle = [...scope.querySelectorAll("h2")].find((node) => {
@@ -526,7 +588,7 @@
               "Тип контента": info.label,
               "Формат / Кодек": format,
               "Разрешение": resolution,
-              "Размер файла": humanSize(material.sizeBytes)
+              "Размер файла": humanSize(sizeBytes)
             }
           : material.type === "video"
             ? {
@@ -534,13 +596,13 @@
                 "Формат / Кодек": format,
                 "Разрешение": resolution,
                 "Длительность": duration,
-                "Размер файла": humanSize(material.sizeBytes)
+                "Размер файла": humanSize(sizeBytes)
               }
             : {
                 "Тип контента": info.label,
                 "Формат / Кодек": format,
                 "Длительность": duration,
-                "Размер файла": humanSize(material.sizeBytes)
+                "Размер файла": humanSize(sizeBytes)
               };
 
         [...about.querySelectorAll('[class~="py-2.5"]')].forEach((row) => {
@@ -633,7 +695,7 @@
       ? [
           ["Формат", format],
           ["Разрешение", resolution],
-          ["Размер", humanSize(material.sizeBytes)],
+          ["Размер", humanSize(sizeBytes)],
           ["Категория", material.category]
         ]
       : material.type === "video"
@@ -641,12 +703,12 @@
             ["Формат", format],
             ["Разрешение", resolution],
             ["Длительность", duration],
-            ["Размер", humanSize(material.sizeBytes)]
+            ["Размер", humanSize(sizeBytes)]
           ]
         : [
             ["Формат", format],
             ["Длительность", duration],
-            ["Размер", humanSize(material.sizeBytes)],
+            ["Размер", humanSize(sizeBytes)],
             ["Категория", material.category]
           ];
 
@@ -861,8 +923,14 @@
       renderTags(scope, material);
       setupMedia(scope, material);
       applyTechnicalSpecs(scope, material, {});
-      waitForMediaMetadata(scope, material).then((meta) => {
-        applyTechnicalSpecs(scope, material, meta);
+      Promise.all([
+        waitForMediaMetadata(scope, material),
+        probeResourceMetadata(material)
+      ]).then(([mediaMeta, resourceMeta]) => {
+        applyTechnicalSpecs(scope, material, {
+          ...mediaMeta,
+          ...resourceMeta
+        });
       });
       bindLike(scope, material);
       bindDelete(scope, material, user);

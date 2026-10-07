@@ -470,6 +470,17 @@
       MG.renderCards(scope, result.materials, true);
       updateCounters(scope, result.materials);
       setupFilters(scope);
+
+      if (scope.classList.contains("mobile-view")) {
+        [...scope.querySelectorAll("button,a")].forEach((control) => {
+          const text = clean(control.textContent);
+          const icon = clean(control.querySelector(".material-symbols-outlined")?.textContent);
+
+          if (text === "Редактировать" || icon === "settings") {
+            control.style.display = "none";
+          }
+        });
+      }
     });
   }
 

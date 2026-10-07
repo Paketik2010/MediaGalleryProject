@@ -82,7 +82,38 @@
     item.style.display = "none";
   });
 
+  function cleanupUnsupportedMobileLogin() {
+    const mobile = document.querySelector(".mobile-view");
+    if (!mobile) return;
+
+    const forgot = [...mobile.querySelectorAll("a,button")].find((node) =>
+      node.textContent.trim() === "Забыли пароль?"
+    );
+    if (forgot) forgot.style.display = "none";
+
+    const socials = [...mobile.querySelectorAll("button")].filter((button) =>
+      /^(Google|GitHub)$/.test(button.textContent.trim())
+    );
+
+    if (socials.length) {
+      const group = socials[0].parentElement;
+      if (group && socials.every((button) => group.contains(button))) {
+        group.style.display = "none";
+
+        const divider = group.previousElementSibling;
+        if (divider && /или через/i.test(divider.textContent)) {
+          divider.style.display = "none";
+        }
+      } else {
+        socials.forEach((button) => {
+          button.style.display = "none";
+        });
+      }
+    }
+  }
+
   if (MG.page === "login.html") {
+    cleanupUnsupportedMobileLogin();
     document.querySelectorAll(".desktop-view form,.mobile-view form").forEach((form) => {
       const login = form.querySelector('input[name="identifier"],#login-identifier');
       const password = form.querySelector('input[name="password"],#login-password');

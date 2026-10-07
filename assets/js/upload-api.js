@@ -749,6 +749,23 @@
     setupFilePicker(scope);
     setupLink(scope);
 
+    if (scope.classList.contains("mobile-view")) {
+      [...scope.querySelectorAll("button")].forEach((button) => {
+        const text = button.textContent.replace(/\s+/g, " ").trim();
+
+        if (/В черновики/i.test(text)) {
+          button.style.display = "none";
+        }
+
+        if (text === "Отмена") {
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            location.href = MG.pageFile("gallery.html");
+          });
+        }
+      });
+    }
+
     scope.querySelectorAll("#assetCategory,#category-select").forEach((select) => {
       select.innerHTML = categories.map((category) => {
         return '<option value="' + MG.esc(category.name) + '">' +
