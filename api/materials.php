@@ -14,9 +14,9 @@ $category = trim((string)($_GET['category'] ?? ''));
 $mine = ($_GET['mine'] ?? '') === '1';
 
 if ($q !== '') {
-    $where[] = '(m.title LIKE ? OR m.description LIKE ? OR u.name LIKE ? OR u.username LIKE ?)';
+    $where[] = '(m.title LIKE ? OR m.description LIKE ? OR m.tags LIKE ? OR u.name LIKE ? OR u.username LIKE ?)';
     $search = '%' . $q . '%';
-    array_push($params, $search, $search, $search, $search);
+    array_push($params, $search, $search, $search, $search, $search);
 }
 
 if (in_array($type, ['image', 'video', 'audio'], true)) {

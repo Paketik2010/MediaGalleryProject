@@ -31,7 +31,7 @@
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
 <!-- Type 1: Image -->
-<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all" data-upload-type-button="image">
 <input class="peer sr-only" name="media_type" type="radio" value="image"/>
 <div class="w-full flex items-start justify-between mb-space-sm">
 <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant peer-checked:text-primary transition-colors">
@@ -46,7 +46,7 @@
 <div class="absolute inset-0 rounded-xl bg-primary/5 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"></div>
 </label>
 <!-- Type 2: Video (Checked by default) -->
-<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all" data-upload-type-button="video">
 <input checked="" class="peer sr-only" name="media_type" type="radio" value="video"/>
 <div class="w-full flex items-start justify-between mb-space-sm">
 <div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center transition-colors">
@@ -61,7 +61,7 @@
 <div class="absolute inset-0 rounded-xl bg-primary/10 opacity-100 pointer-events-none transition-opacity"></div>
 </label>
 <!-- Type 3: Audio -->
-<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<label class="group relative flex flex-col p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all" data-upload-type-button="audio">
 <input class="peer sr-only" name="media_type" type="radio" value="audio"/>
 <div class="w-full flex items-start justify-between mb-space-sm">
 <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant peer-checked:text-primary transition-colors">
@@ -87,7 +87,7 @@
 </label>
 <span class="font-body-sm text-body-sm text-outline">0 / 120</span>
 </div>
-<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-[0_0_0_1px_rgba(119,117,135,0.25)] focus:shadow-[0_0_0_2px_rgba(79,70,229,1)] focus:outline-none transition-all placeholder:text-outline" id="assetTitle" placeholder="Например: Закат на побережье" required="" type="text" value="Создание адаптивных сеток в CSS Grid & Flexbox"/>
+<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-[0_0_0_1px_rgba(119,117,135,0.25)] focus:shadow-[0_0_0_2px_rgba(79,70,229,1)] focus:outline-none transition-all placeholder:text-outline" id="assetTitle" placeholder="Например: Закат на побережье" required="" type="text"/>
 </div>
 <!-- Category & Visibility Row -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
@@ -122,28 +122,13 @@
 <label class="font-label-lg text-label-lg text-on-surface font-medium" for="assetDescription">Описание материала</label>
 <span class="font-body-sm text-body-sm text-outline">Markdown поддерживается</span>
 </div>
-<textarea class="w-full p-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-[0_0_0_1px_rgba(119,117,135,0.25)] focus:shadow-[0_0_0_2px_rgba(79,70,229,1)] focus:outline-none transition-all placeholder:text-outline resize-none" id="assetDescription" placeholder="Расскажите подробнее о материале: контекст создания, используемое оборудование или краткое содержание..." rows="4">Практическое видеоруководство по созданию адаптивных модульных макетов в современной веб-разработке. Рассматриваются CSS Subgrid, auto-fit колонки и гибкая типографика без использования громоздких медиа-запросов.</textarea>
+<textarea class="w-full p-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-[0_0_0_1px_rgba(119,117,135,0.25)] focus:shadow-[0_0_0_2px_rgba(79,70,229,1)] focus:outline-none transition-all placeholder:text-outline resize-none" id="assetDescription" placeholder="Расскажите подробнее о материале: контекст создания, используемое оборудование или краткое содержание..." rows="4"></textarea>
 </div>
 <!-- Tags Field -->
 <div class="flex flex-col gap-2">
 <label class="font-label-lg text-label-lg text-on-surface font-medium">Теги и ключевые слова</label>
 <div class="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-surface-container-low shadow-[0_0_0_1px_rgba(119,117,135,0.15)] focus-within:shadow-[0_0_0_2px_rgba(79,70,229,1)] focus-within:bg-surface-container-lowest transition-all">
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-                  #web
-                  <button class="hover:text-error transition-colors flex items-center" type="button"><span class="material-symbols-outlined text-[14px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-                  #tutorial
-                  <button class="hover:text-error transition-colors flex items-center" type="button"><span class="material-symbols-outlined text-[14px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-                  #frontend
-                  <button class="hover:text-error transition-colors flex items-center" type="button"><span class="material-symbols-outlined text-[14px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-                  #cssgrid
-                  <button class="hover:text-error transition-colors flex items-center" type="button"><span class="material-symbols-outlined text-[14px]">close</span></button>
-</span>
+
 <input class="flex-1 min-w-[120px] bg-transparent border-0 px-2 py-1 text-on-surface font-body-sm text-body-sm focus:outline-none placeholder:text-outline" placeholder="Добавить тег..." type="text"/>
 </div>
 <span class="font-body-sm text-body-sm text-outline">Нажмите Enter или запятую для фиксации нового тега</span>
@@ -216,7 +201,7 @@
 </div>
 </div>
 <!-- Selected File Preview Card -->
-<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm relative overflow-hidden">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm relative overflow-hidden" data-upload-selected-card style="display:none">
 <div class="flex items-center gap-space-md">
 <div class="w-16 h-12 rounded-lg bg-on-surface overflow-hidden relative shrink-0 flex items-center justify-center shadow-sm">
 <img class="w-full h-full object-cover opacity-80" data-alt="Digital studio scene showing video editing timeline with glowing wave forms and code snippets in deep midnight blues and indigo accents modern sleek tech concept" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCyJrJybfL7xz5GdXuntJT4OoZqEnCCPX8HqjgQDa8uwn4oDU70F3-AtapoVuWcdmVkQHrRROlI1kze_7qhi7F9exhHskNSZrM2jNfjgtQNg66aJ4lDs2TTytm4MVWwORnrNu8PtQ27T0cS1DY1RAh3Yeh6QnkZzLdGTjyH1M7aGU91JEX3xJKAJXEZ4-c7Fo_0iXxr94VDxJXe069nY3q0T4rCqageijy6Qv9pDc"/>
@@ -255,7 +240,7 @@
 </div>
 </div>
 <!-- Validation & Safe Notice Banner -->
-<div class="p-space-sm rounded-xl bg-surface-container flex items-start gap-space-sm text-on-surface-variant">
+<div class="p-space-sm rounded-xl bg-surface-container flex items-start gap-space-sm text-on-surface-variant" data-upload-validation style="display:none">
 <span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">verified_user</span>
 <div class="flex flex-col text-left">
 <span class="font-label-md text-label-md text-on-surface font-medium">Проверка формата завершена успешно</span>
@@ -264,7 +249,7 @@
 </div>
 </div>
 <!-- Video Settings & Preview Player Card -->
-<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md" data-upload-preview-settings style="display:none">
 <div class="flex items-center justify-between">
 <span class="font-title-md text-title-md text-on-surface">Настройки превью</span>
 <span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Обложка</span>
@@ -375,7 +360,7 @@
 <label class="font-label-md text-label-md text-on-surface-variant mb-space-xs block">Тип контента</label>
 <div class="grid grid-cols-3 gap-2">
 <!-- Image Type -->
-<div class="group relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer text-center select-none active:scale-[0.98]">
+<div class="group relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer text-center select-none active:scale-[0.98]" data-upload-type-button="image">
 <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-secondary mb-1.5 group-hover:scale-110 transition-transform">
 <span class="material-symbols-outlined text-[20px]">image</span>
 </div>
@@ -383,8 +368,8 @@
 <span class="font-body-sm text-[10px] text-on-surface-variant/80 mt-0.5 leading-tight">до 20 МБ</span>
 </div>
 <!-- Video Type (Active) -->
-<div class="relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-primary-fixed shadow-md text-center select-none cursor-pointer">
-<div class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center shadow">
+<div class="relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-primary-fixed shadow-md text-center select-none cursor-pointer" data-upload-type-button="video">
+<div class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center shadow" data-upload-check>
 <span class="material-symbols-outlined text-[14px]">check</span>
 </div>
 <div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center mb-1.5 shadow-sm">
@@ -394,7 +379,7 @@
 <span class="font-body-sm text-[10px] text-on-primary-fixed-variant mt-0.5 leading-tight">до 500 МБ</span>
 </div>
 <!-- Audio Type -->
-<div class="group relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer text-center select-none active:scale-[0.98]">
+<div class="group relative flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer text-center select-none active:scale-[0.98]" data-upload-type-button="audio">
 <div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-tertiary mb-1.5 group-hover:scale-110 transition-transform">
 <span class="material-symbols-outlined text-[20px]">headphones</span>
 </div>
@@ -421,7 +406,7 @@
 </div>
 </div>
 <!-- Active Attached Media Card -->
-<div class="w-full bg-surface-container-lowest rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5">
+<div class="w-full bg-surface-container-lowest rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5" data-upload-selected-card style="display:none">
 <div class="flex items-start gap-3">
 <div class="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface-container-highest shadow-inner">
 <img class="w-full h-full object-cover" data-alt="A clean modern digital workspace displaying responsive code syntax and preview cards, captured with moody ambient indigo cinematic glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjG3ztezKYajjkSReZOOHHqgUKA370I1v1DzJd9Putsch6KI8dYeIK2SjsKgf6SFA17E8zJQR7bVekWmNpSphaJPM-D0NrQDSqxwiyXD8M5EpCH47rhSnq1RWs5S4wFN9gBLIpbW1YI2VtPKdQHWv8YJ4Hdsn77mufR_rzGMI24lXq0UStK2ISbgnl7VOahO3HTJOOoqhDWej6TseXciqEhdxXni0Cjw8fV5jf3jM"/>
@@ -463,10 +448,10 @@
 <div class="flex flex-col gap-1.5">
 <div class="flex justify-between items-center">
 <label class="font-label-lg text-label-lg text-on-surface font-semibold" for="material-title">Название материала</label>
-<span class="font-label-caps text-label-caps text-on-surface-variant">46 / 120</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">0 / 120</span>
 </div>
 <div class="relative">
-<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-sm outline-none focus:bg-surface-bright focus:shadow-md transition-all" id="material-title" placeholder="Введите емкое название..." type="text" value="Создание адаптивных сеток в CSS Grid &amp; Flexbox"/>
+<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-sm outline-none focus:bg-surface-bright focus:shadow-md transition-all" id="material-title" placeholder="Введите емкое название..." type="text"/>
 </div>
 </div>
 <!-- Category & Access Selector -->
@@ -504,7 +489,7 @@
 <!-- Description Area -->
 <div class="flex flex-col gap-1.5">
 <label class="font-label-lg text-label-lg text-on-surface font-semibold" for="material-desc">Описание</label>
-<textarea class="w-full p-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-sm outline-none focus:shadow-md resize-none transition-all placeholder:text-on-surface-variant/60" id="material-desc" placeholder="Расскажите подробнее: о чем видео, какие темы разобраны..." rows="3">Практическое руководство по построению современных гибких макетов. Разбираем реальные кейсы адаптации без медиа-запросов с использованием minmax() и clamp().</textarea>
+<textarea class="w-full p-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-sm outline-none focus:shadow-md resize-none transition-all placeholder:text-on-surface-variant/60" id="material-desc" placeholder="Расскажите подробнее: о чем видео, какие темы разобраны..." rows="3"></textarea>
 </div>
 <!-- Tags Selector -->
 <div class="flex flex-col gap-1.5">
@@ -513,22 +498,7 @@
 <span class="font-label-caps text-label-caps text-on-surface-variant">4 из 8</span>
 </div>
 <div class="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-surface-container-lowest shadow-sm min-h-12 items-center">
-<span class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-          #web
-          <button class="w-4 h-4 rounded-full flex items-center justify-center hover:bg-surface-variant text-on-surface-variant" type="button"><span class="material-symbols-outlined text-[13px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-          #tutorial
-          <button class="w-4 h-4 rounded-full flex items-center justify-center hover:bg-surface-variant text-on-surface-variant" type="button"><span class="material-symbols-outlined text-[13px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-          #frontend
-          <button class="w-4 h-4 rounded-full flex items-center justify-center hover:bg-surface-variant text-on-surface-variant" type="button"><span class="material-symbols-outlined text-[13px]">close</span></button>
-</span>
-<span class="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md">
-          #cssgrid
-          <button class="w-4 h-4 rounded-full flex items-center justify-center hover:bg-surface-variant text-on-surface-variant" type="button"><span class="material-symbols-outlined text-[13px]">close</span></button>
-</span>
+
 <button class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors" type="button">
 <span class="material-symbols-outlined text-[15px]">add</span>
           Добавить
@@ -536,7 +506,7 @@
 </div>
 </div>
 <!-- Thumbnail Picker Section -->
-<div class="flex flex-col gap-2 mt-1">
+<div class="flex flex-col gap-2 mt-1" data-upload-preview-settings style="display:none">
 <div class="flex items-center justify-between">
 <label class="font-label-lg text-label-lg text-on-surface font-semibold">Кадр обложки</label>
 <span class="font-label-caps text-label-caps text-primary cursor-pointer hover:underline">Загрузить свой</span>
@@ -597,4 +567,4 @@
 </div>
 </div>
 </form>
-</div></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=7"></script><script src="../assets/js/api-client.js?v=3"></script><script src="../assets/js/catalog-api.js?v=2"></script><script src="../assets/js/auth-pages.js?v=3"></script><script src="../assets/js/profile-api.js?v=3"></script><script src="../assets/js/upload-api.js?v=2"></script><script src="../assets/js/detail-admin-api.js?v=3"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>
+</div></main></div><script src="../assets/js/route-adapter.js?v=8"></script><script src="../assets/js/brand-normalizer.js?v=8"></script><script src="../assets/js/card-normalizer.js?v=8"></script><script src="../assets/js/section-variant.js?v=7"></script><script src="../assets/js/detail-variant.js?v=7"></script><script src="../assets/js/search-behavior.js?v=7"></script><script src="../assets/js/filter-normalizer.js?v=16"></script><script src="../assets/js/api-client.js?v=6"></script><script src="../assets/js/catalog-api.js?v=2"></script><script src="../assets/js/auth-pages.js?v=3"></script><script src="../assets/js/profile-api.js?v=7"></script><script src="../assets/js/upload-api.js?v=7"></script><script src="../assets/js/detail-admin-api.js?v=7"></script><script>document.documentElement.classList.remove("mg-preinit");</script></body></html>

@@ -10,6 +10,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $title = trim((string)($_POST['title'] ?? ''));
 $description = trim((string)($_POST['description'] ?? ''));
+$rawTags = trim((string)($_POST['tags'] ?? ''));
+$tagParts = preg_split('/[,;\r\n]+/u', $rawTags) ?: [];
+$cleanTags = [];
+
+foreach ($tagParts as $tag) {
+    $tag = ltrim(trim($tag), '#');
+
+    if ($tag === '' || in_array($tag, $cleanTags, true)) {
+        continue;
+    }
+
+    $cleanTags[] = mb_substr($tag, 0, 30);
+
+    if (count($cleanTags) >= 8) {
+        break;
+    }
+}
+
+$tags = implode(',', $cleanTags);
 $type = trim((string)($_POST['type'] ?? $_POST['media_type'] ?? ''));
 $category = trim((string)($_POST['category'] ?? ''));
 $sourceUrl = validHttpUrl((string)($_POST['source_url'] ?? ''));
@@ -53,6 +72,7 @@ $stmt = $pdo->prepare('
     INSERT INTO materials(
         title,
         description,
+        tags,
         type,
         category_id,
         file_path,
@@ -62,12 +82,13 @@ $stmt = $pdo->prepare('
         mime_type,
         size_bytes,
         author_id
-    ) VALUES(?,?,?,?,?,?,?,?,?,?,?)
+    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
 ');
 
 $stmt->execute([
     $title,
     $description,
+    $tags,
     $type,
     $categoryId,
     $upload['file_path'] ?? null,

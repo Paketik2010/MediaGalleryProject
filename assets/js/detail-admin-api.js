@@ -41,6 +41,93 @@
       material.type === "audio" ? "Аудио" : "Видео";
   }
 
+  function humanDuration(seconds) {
+    const value = Number(seconds || 0);
+    if (!Number.isFinite(value) || value <= 0) return "—";
+
+    const total = Math.round(value);
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const secs = total % 60;
+    const parts = [];
+
+    if (hours) parts.push(hours + " ч");
+    if (minutes || hours) parts.push(minutes + " мин");
+    parts.push(secs + " сек");
+
+    return parts.join(" ");
+  }
+
+  function resolutionText(width, height) {
+    const w = Number(width || 0);
+    const h = Number(height || 0);
+
+    if (!w || !h) return "—";
+
+    const gcd = (a, b) => b ? gcd(b, a % b) : a;
+    const divisor = gcd(w, h) || 1;
+
+    return w + " × " + h + " (" + Math.round(w / divisor) + ":" + Math.round(h / divisor) + ")";
+  }
+
+  function waitForMediaMetadata(scope, material) {
+    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const container = isMobile
+      ? scope.querySelector("main .aspect-video")
+      : scope.querySelector("#video-container");
+
+    if (!container) return Promise.resolve({});
+
+    const element = material.type === "video"
+      ? container.querySelector("video")
+      : material.type === "audio"
+        ? container.querySelector("audio")
+        : container.querySelector("img");
+
+    if (!element) return Promise.resolve({});
+
+    if (material.type === "image") {
+      if (element.complete && element.naturalWidth) {
+        return Promise.resolve({
+          width: element.naturalWidth,
+          height: element.naturalHeight
+        });
+      }
+
+      return new Promise((resolve) => {
+        const finish = () => resolve({
+          width: element.naturalWidth || 0,
+          height: element.naturalHeight || 0
+        });
+
+        element.addEventListener("load", finish, { once: true });
+        element.addEventListener("error", () => resolve({}), { once: true });
+        setTimeout(() => resolve({}), 5000);
+      });
+    }
+
+    const read = () => ({
+      width: material.type === "video" ? element.videoWidth || 0 : 0,
+      height: material.type === "video" ? element.videoHeight || 0 : 0,
+      duration: Number.isFinite(element.duration) ? element.duration : 0
+    });
+
+    if (element.readyState >= 1) {
+      return Promise.resolve(read());
+    }
+
+    return new Promise((resolve) => {
+      element.addEventListener("loadedmetadata", () => resolve(read()), { once: true });
+      element.addEventListener("error", () => resolve({}), { once: true });
+
+      try {
+        element.load();
+      } catch (_) {}
+
+      setTimeout(() => resolve(read()), 8000);
+    });
+  }
+
   function setMetric(root, iconName, value) {
     if (!root) return;
 
@@ -76,6 +163,38 @@
     if (badges[1]) badges[1].textContent = material.category;
     if (badges[2]) badges[2].textContent = formatName(material);
     if (badges[3]) badges[3].hidden = true;
+  }
+
+  function renderTags(scope, material) {
+    const label = [...scope.querySelectorAll("span")].find((node) => {
+      return node.textContent.trim() === "Теги:";
+    });
+
+    if (!label) return;
+
+    const row = label.parentElement;
+    if (!row) return;
+
+    row.querySelectorAll("a,[data-material-tag]").forEach((node) => node.remove());
+
+    const tags = Array.isArray(material.tags)
+      ? material.tags.map((tag) => String(tag || "").replace(/^#+/, "").trim()).filter(Boolean)
+      : [];
+
+    if (!tags.length) {
+      row.style.display = "none";
+      return;
+    }
+
+    row.style.display = "";
+
+    tags.forEach((tag) => {
+      const chip = document.createElement("span");
+      chip.dataset.materialTag = "1";
+      chip.className = "px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-body-sm text-body-sm";
+      chip.textContent = "#" + tag;
+      row.appendChild(chip);
+    });
   }
 
   function downloadMaterial(material) {
@@ -221,6 +340,7 @@
       cover.style.backgroundImage = poster ? "url('" + poster.replace(/'/g, "%27") + "')" : "none";
       cover.style.backgroundColor = "#111827";
       cover.style.transition = "opacity .18s ease";
+      cover.style.pointerEvents = "none";
     }
 
     const video = document.createElement("video");
@@ -232,6 +352,7 @@
     container.prepend(video);
 
     const centerButton = container.querySelector("#center-play-btn");
+    if (centerButton) centerButton.style.zIndex = "20";
     const barButton = container.querySelector("#bar-play-btn") ||
       [...container.querySelectorAll("button")].find((button) => {
         return button.querySelector("#bottom-play-icon");
@@ -254,17 +375,23 @@
     const fullscreen = container.querySelector("#fullscreen-btn") ||
       container.querySelector('button[title="На весь экран"]');
 
+    function togglePlayback() {
+      if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    }
+
     [centerButton, barButton].forEach((button) => {
       if (!button) return;
       button.removeAttribute("onclick");
+      button.addEventListener("click", togglePlayback);
+    });
 
-      button.addEventListener("click", () => {
-        if (video.paused) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      });
+    container.addEventListener("click", (event) => {
+      if (event.target.closest("button") || event.target.closest("#scrubber-container")) return;
+      togglePlayback();
     });
 
     if (scrubber) {
@@ -375,6 +502,167 @@
           ? '<audio class="w-full max-w-xl" controls preload="metadata" src="' + MG.esc(source) + '"></audio>'
           : '<p class="text-inverse-on-surface">Аудиофайл недоступен</p>') +
       '</div>';
+  }
+
+  function applyTechnicalSpecs(scope, material, meta = {}) {
+    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const info = MG.typeInfo(material.type);
+    const format = formatName(material);
+    const resolution = resolutionText(meta.width, meta.height);
+    const duration = humanDuration(meta.duration);
+
+    if (!isMobile) {
+      const aboutTitle = [...scope.querySelectorAll("h2")].find((node) => {
+        return node.textContent.trim() === "О материале";
+      });
+      const about = aboutTitle?.closest(".p-space-lg.rounded-xl");
+
+      if (about) {
+        const typeBadge = about.querySelector(":scope > div:first-child > span:last-child");
+        if (typeBadge) typeBadge.textContent = info.label;
+
+        const values = material.type === "image"
+          ? {
+              "Тип контента": info.label,
+              "Формат / Кодек": format,
+              "Разрешение": resolution,
+              "Размер файла": humanSize(material.sizeBytes)
+            }
+          : material.type === "video"
+            ? {
+                "Тип контента": info.label,
+                "Формат / Кодек": format,
+                "Разрешение": resolution,
+                "Длительность": duration,
+                "Размер файла": humanSize(material.sizeBytes)
+              }
+            : {
+                "Тип контента": info.label,
+                "Формат / Кодек": format,
+                "Длительность": duration,
+                "Размер файла": humanSize(material.sizeBytes)
+              };
+
+        [...about.querySelectorAll('[class~="py-2.5"]')].forEach((row) => {
+          const labelNode = row.querySelector(".text-on-surface-variant");
+          const valueNode = row.querySelector(".font-semibold");
+          const rowText = row.textContent || "";
+          const label = [
+            "Тип контента",
+            "Формат / Кодек",
+            "Формат",
+            "Разрешение",
+            "Длительность",
+            "Размер файла",
+            "Лицензия",
+            "Частота кадров",
+            "Аудиодорожка"
+          ].find((item) => rowText.includes(item));
+
+          if (!label) return;
+
+          const key = label === "Формат" ? "Формат / Кодек" : label;
+
+          if (label === "Формат / Кодек" && labelNode) {
+            const icon = labelNode.querySelector(".material-symbols-outlined");
+            labelNode.childNodes.forEach((node) => {
+              if (node.nodeType === Node.TEXT_NODE) node.remove();
+            });
+            labelNode.append(document.createTextNode(" Формат"));
+            if (icon) labelNode.prepend(icon);
+          }
+
+          const shouldShow = Object.prototype.hasOwnProperty.call(values, key);
+          row.style.display = shouldShow ? "" : "none";
+
+          if (shouldShow && valueNode) {
+            valueNode.textContent = values[key];
+          }
+        });
+      }
+
+      const fakeStats = [...scope.querySelectorAll("h3")].find((node) => {
+        return node.textContent.trim() === "Статистика просмотров";
+      })?.closest(".p-space-lg.rounded-xl");
+      if (fakeStats) fakeStats.style.display = "none";
+
+      const timecodesTitle = [...scope.querySelectorAll("span")].find((node) => {
+        return node.textContent.trim() === "Таймкоды и содержание";
+      });
+      const timecodes = timecodesTitle?.closest(".mt-2");
+      if (timecodes) timecodes.style.display = "none";
+
+      const resourceButton = [...scope.querySelectorAll("button")].find((button) => {
+        return button.textContent.includes("Материалы урока");
+      });
+      if (resourceButton) resourceButton.style.display = "none";
+
+      const updated = [...scope.querySelectorAll("span,p")].find((node) => {
+        return /^Обновлено:/i.test(node.textContent.trim());
+      });
+      if (updated) updated.textContent = "Добавлено: " + fullDate(material.createdAt);
+
+      const relatedSubtitle = [...scope.querySelectorAll("p")].find((node) => {
+        return node.textContent.includes("Рекомендации на основе тематики");
+      });
+      if (relatedSubtitle) {
+        relatedSubtitle.textContent = "Рекомендации по категории «" + material.category + "»";
+      }
+
+      const relatedLink = [...scope.querySelectorAll("a")].find((node) => {
+        return /Смотреть все (видео|изображения|аудио)/i.test(node.textContent);
+      });
+      if (relatedLink) {
+        const labels = {
+          image: ["Смотреть все изображения", "images"],
+          video: ["Смотреть все видео", "videos"],
+          audio: ["Смотреть все аудио", "audio"]
+        };
+        const [label, path] = labels[material.type];
+        const textSpan = relatedLink.querySelector("span:first-child");
+        if (textSpan) textSpan.textContent = label;
+        relatedLink.dataset.path = path;
+        relatedLink.href = MG.pageFile(path + ".html");
+      }
+
+      return;
+    }
+
+    const cells = scope.querySelectorAll("#tech-specs-content .grid > div");
+    const specs = material.type === "image"
+      ? [
+          ["Формат", format],
+          ["Разрешение", resolution],
+          ["Размер", humanSize(material.sizeBytes)],
+          ["Категория", material.category]
+        ]
+      : material.type === "video"
+        ? [
+            ["Формат", format],
+            ["Разрешение", resolution],
+            ["Длительность", duration],
+            ["Размер", humanSize(material.sizeBytes)]
+          ]
+        : [
+            ["Формат", format],
+            ["Длительность", duration],
+            ["Размер", humanSize(material.sizeBytes)],
+            ["Категория", material.category]
+          ];
+
+    cells.forEach((cell, index) => {
+      const spec = specs[index];
+      if (!spec) return;
+
+      const spans = cell.querySelectorAll("span");
+      if (spans[0]) spans[0].textContent = spec[0];
+      if (spans[1]) spans[1].textContent = spec[1];
+    });
+
+    const timecodes = [...scope.querySelectorAll("h3")].find((node) => {
+      return node.textContent.trim() === "Таймкоды и содержание";
+    })?.closest(".flex.flex-col.gap-3");
+    if (timecodes) timecodes.style.display = "none";
   }
 
   function hydrateDesktop(scope, material) {
@@ -570,7 +858,12 @@
         hydrateMobile(scope, material);
       }
 
+      renderTags(scope, material);
       setupMedia(scope, material);
+      applyTechnicalSpecs(scope, material, {});
+      waitForMediaMetadata(scope, material).then((meta) => {
+        applyTechnicalSpecs(scope, material, meta);
+      });
       bindLike(scope, material);
       bindDelete(scope, material, user);
     });
@@ -630,6 +923,24 @@
     });
   }
 
-  loadDetail().catch((error) => MG.toast(error.message, true));
+  loadDetail().catch((error) => {
+    if (MG.page !== "detail.html") return;
+
+    document.querySelectorAll(".stitch-desktop-view main,.stitch-mobile-view main").forEach((main) => {
+      main.innerHTML =
+        '<div class="w-full max-w-[760px] mx-auto px-margin-mobile md:px-margin py-space-xl">' +
+          '<div class="rounded-2xl bg-surface-container-lowest shadow-sm p-space-xl text-center">' +
+            '<span class="material-symbols-outlined text-[48px] text-outline">error_outline</span>' +
+            '<h1 class="font-headline-sm text-headline-sm text-on-surface mt-3">' +
+              (error.status === 404 ? "Материал не найден" : "Не удалось открыть материал") +
+            '</h1>' +
+            '<p class="font-body-md text-body-md text-on-surface-variant mt-2">' + MG.esc(error.message || "Попробуйте открыть страницу ещё раз.") + '</p>' +
+            '<a class="inline-flex items-center justify-center h-10 px-space-md rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg mt-5" href="' + MG.pageFile("gallery.html") + '">Вернуться в галерею</a>' +
+          '</div>' +
+        '</div>';
+    });
+
+    MG.toast(error.message, true);
+  });
   loadAdmin().catch((error) => MG.toast(error.message, true));
 })();
