@@ -322,6 +322,96 @@
     });
   }
 
+  function updateMobileControls(scope, key) {
+    if (!scope.classList.contains("mobile-view")) return;
+
+    const input = [...scope.querySelectorAll("input")].find((node) =>
+      /поиск/i.test(node.getAttribute("placeholder") || "")
+    );
+
+    if (input) {
+      input.placeholder = key === "images"
+        ? "Поиск по названию или автору..."
+        : "Поиск видео...";
+    }
+
+    const chipRow = [...scope.querySelectorAll("div")].find((node) =>
+      node.classList.contains("overflow-x-auto") &&
+      node.querySelectorAll(":scope > button").length >= 3
+    );
+
+    if (chipRow) {
+      const specs = key === "images"
+        ? [
+            ["Все категории", ""],
+            ["Фотографии", "photo_camera"],
+            ["Обучение", "school"],
+            ["Развлечения", "celebration"],
+            ["Другое", "category"]
+          ]
+        : [
+            ["Все", ""],
+            ["Обучение", "school"],
+            ["Развлечения", "movie"],
+            ["Путешествия", "travel_explore"],
+            ["Технологии", "memory"]
+          ];
+
+      const template = chipRow.querySelector("button");
+      if (template) {
+        chipRow.innerHTML = "";
+        specs.forEach(([label, icon], index) => {
+          const button = template.cloneNode(true);
+          button.removeAttribute("onclick");
+          button.classList.toggle("bg-primary", index === 0);
+          button.classList.toggle("bg-primary-container", index === 0);
+          button.classList.toggle("text-on-primary", index === 0);
+          button.classList.toggle("bg-surface-container", index !== 0);
+          button.classList.toggle("text-on-surface-variant", index !== 0);
+          button.innerHTML = (icon
+            ? '<span class="material-symbols-outlined text-[16px]">' + icon + "</span>"
+            : "") + "<span>" + label + "</span>";
+          chipRow.appendChild(button);
+        });
+      }
+    }
+
+    const extraAction = [...scope.querySelectorAll("button")].find((button) =>
+      button.getAttribute("aria-label") === "Случайный трек"
+    );
+
+    if (extraAction) {
+      if (key === "videos") {
+        extraAction.style.display = "none";
+      } else {
+        extraAction.setAttribute("aria-label", "Вид списком");
+        extraAction.innerHTML = '<span class="material-symbols-outlined text-[18px]">view_agenda</span>';
+
+        if (!extraAction.previousElementSibling?.matches("[data-mg-grid-view]")) {
+          const grid = extraAction.cloneNode(true);
+          grid.dataset.mgGridView = "1";
+          grid.setAttribute("aria-label", "Вид сеткой");
+          grid.innerHTML = '<span class="material-symbols-outlined text-[18px]">grid_view</span>';
+          extraAction.parentElement?.insertBefore(grid, extraAction);
+        }
+      }
+    }
+
+    scope.querySelectorAll(".mg-card").forEach((card) => {
+      const type = card.querySelector(".mg-card__type");
+      const save = card.querySelector(".mg-card__save");
+      const saveIcon = save?.querySelector(".material-symbols-outlined");
+
+      if (key === "images") {
+        if (type) type.textContent = "ФОТО";
+        if (save) save.setAttribute("aria-label", "В избранное");
+        if (saveIcon) saveIcon.textContent = "favorite_border";
+      } else if (key === "videos") {
+        if (type) type.textContent = "ВИДЕО";
+      }
+    });
+  }
+
   function updateDesktopNav(scope, key) {
     const targetPath = key === "images" ? "images" : key === "videos" ? "videos" : "audio";
     const header = scope.querySelector("header");
@@ -392,6 +482,7 @@
     document.querySelectorAll(".desktop-view, .mobile-view").forEach((scope) => {
       updateHeader(scope, cfg);
       updateCards(scope, cfg);
+      updateMobileControls(scope, key);
       updateDesktopNav(scope, key);
       updateBottomNav(scope, key);
     });

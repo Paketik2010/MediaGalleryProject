@@ -49,7 +49,43 @@
     });
   };
 
+  const ensureMobileNav = () => {
+    const mobile = document.querySelector('.mobile-view');
+    if (!mobile || mobile.querySelector('.mg-mobile-nav')) return;
+
+    const pathname = window.location.pathname.toLowerCase();
+    const active = pathname.endsWith('/images.html') ? 'images'
+      : pathname.endsWith('/videos.html') ? 'videos'
+      : pathname.endsWith('/search.html') ? 'search'
+      : pathname.endsWith('/audio.html') ? 'audio'
+      : /\/(login|register|profile)\.html$/.test(pathname) ? 'account'
+      : '';
+
+    const item = (path, icon, label, key, extra = '') => {
+      const current = active === key;
+      return '<a class="mg-mobile-nav__link ' + extra + (current ? ' is-active' : '') + '" data-path="' + path + '" href="#"' +
+        (current ? ' aria-current="page"' : '') + '>' +
+        '<span class="material-symbols-outlined">' + icon + '</span>' +
+        '<span>' + label + '</span>' +
+      '</a>';
+    };
+
+    const nav = document.createElement('nav');
+    nav.className = 'mg-mobile-nav';
+    nav.setAttribute('aria-label', 'Мобильная навигация');
+    nav.innerHTML = '<div class="mg-mobile-nav__inner">' +
+      item('images', 'image', 'Фото', 'images') +
+      item('videos', 'movie', 'Видео', 'videos') +
+      item('search', 'search', 'Поиск', 'search', ' mg-mobile-nav__search') +
+      item('audio', 'audiotrack', 'Аудио', 'audio') +
+      item('login', 'account_circle', 'Войти', 'account', ' mg-mobile-nav__account') +
+    '</div>';
+
+    mobile.appendChild(nav);
+  };
+
   ensureDesktopSearchLink();
+  ensureMobileNav();
 
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a[data-path]');

@@ -206,6 +206,10 @@
     const header = root.querySelector("header");
     if (!header) return;
 
+    if (root.classList.contains("mobile-view")) {
+      return;
+    }
+
     removeHeaderSearch(root);
 
     const images = [...header.querySelectorAll("img")].filter(isBrandImage);

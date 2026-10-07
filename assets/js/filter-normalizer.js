@@ -421,13 +421,13 @@
     const k=key();
     if (!k) return;
 
-    document.querySelectorAll(".desktop-view,.mobile-view").forEach(scope=>mount(scope,CONFIG[k]));
+    document.querySelectorAll(".desktop-view").forEach(scope=>mount(scope,CONFIG[k]));
   }
 
   run();
 
   window.MediaGalleryRefreshFilters = function () {
-    document.querySelectorAll(".desktop-view,.mobile-view").forEach(scope => {
+    document.querySelectorAll(".desktop-view").forEach(scope => {
       scope.dataset.mgFiltersMounted = "";
       scope.querySelectorAll(".mg-filter-panel").forEach(panel => panel.remove());
     });
