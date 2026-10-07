@@ -16,7 +16,7 @@
   }
 
   function ensureMobileHeaderSearch(root) {
-    if (!root.classList.contains("stitch-mobile-view")) return;
+    if (!root.classList.contains("mobile-view")) return;
 
     const header = root.querySelector("header");
     if (!header) return;
@@ -49,7 +49,7 @@
   }
 
   function removeHeaderSearch(root) {
-    if (root.classList.contains("stitch-mobile-view")) {
+    if (root.classList.contains("mobile-view")) {
       ensureMobileHeaderSearch(root);
       return;
     }
@@ -99,7 +99,7 @@
   }
 
   function normalizeCatalogEyebrow(root) {
-    if (!root.classList.contains("stitch-desktop-view")) return;
+    if (!root.classList.contains("desktop-view")) return;
 
     const path = location.pathname.toLowerCase();
     const icon = path.endsWith("/gallery.html")
@@ -130,7 +130,7 @@
   }
 
   function removeDesktopPageIntro(root) {
-    if (!root.classList.contains("stitch-desktop-view")) return;
+    if (!root.classList.contains("desktop-view")) return;
 
     const path = location.pathname.toLowerCase();
     const main = root.querySelector("main");
@@ -238,7 +238,7 @@
   }
 
   function run() {
-    document.querySelectorAll(".stitch-desktop-view, .stitch-mobile-view")
+    document.querySelectorAll(".desktop-view, .mobile-view")
       .forEach((root) => {
         normalizeBrand(root);
         normalizeCatalogEyebrow(root);

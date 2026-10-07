@@ -73,7 +73,7 @@
   function hideOld(scope, cardContainer) {
     const isSearch=location.pathname.toLowerCase().endsWith("/search.html");
 
-    if (isSearch && scope.classList.contains("stitch-desktop-view")) {
+    if (isSearch && scope.classList.contains("desktop-view")) {
       const parent=cardContainer && cardContainer.parentElement;
       if (parent) {
         [...parent.children].forEach(child=>{
@@ -199,7 +199,7 @@
 
     hideOld(scope,container);
 
-    if (scope.classList.contains("stitch-desktop-view")) {
+    if (scope.classList.contains("desktop-view")) {
       const root=scope.querySelector("main > div");
       if (root) root.style.setProperty("padding-top","24px","important");
     }
@@ -209,7 +209,7 @@
     panel.innerHTML=html(c);
     container.insertAdjacentElement("beforebegin",panel);
 
-    if (scope.classList.contains("stitch-desktop-view")) {
+    if (scope.classList.contains("desktop-view")) {
       const host=panel.parentElement;
       if (host) host.style.setProperty("padding-top","0","important");
       if (host && getComputedStyle(host).display === "flex" && getComputedStyle(host).flexDirection === "column") {
@@ -233,7 +233,7 @@
     const clear=panel.querySelector("[data-mg-clear-category]");
     const viewButtons=[...panel.querySelectorAll("[data-mg-view]")];
     const original=new Map(cards.map((card,i)=>[card,i]));
-    const pageSize=scope.classList.contains("stitch-mobile-view")
+    const pageSize=scope.classList.contains("mobile-view")
       ? 4
       : (c.types ? 12 : 8);
     const status=[...scope.querySelectorAll("p,span")].find(node=>{
@@ -253,7 +253,7 @@
 
     if (paginationRoot && !paginationButtons) {
       paginationButtons=document.createElement("div");
-      paginationButtons.className=scope.classList.contains("stitch-mobile-view")
+      paginationButtons.className=scope.classList.contains("mobile-view")
         ? "flex items-center gap-space-xs pt-1"
         : "flex items-center gap-1.5";
       paginationRoot.appendChild(paginationButtons);
@@ -323,10 +323,10 @@
 
       status.textContent="Показано "+start+(start!==end?"–"+end:"")+" из "+total+suffix;
 
-      const normalClass=scope.classList.contains("stitch-mobile-view")
+      const normalClass=scope.classList.contains("mobile-view")
         ? "w-9 h-9 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-sm"
         : "w-9 h-9 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center shadow-xs transition-colors";
-      const activeClass=scope.classList.contains("stitch-mobile-view")
+      const activeClass=scope.classList.contains("mobile-view")
         ? "w-9 h-9 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center shadow-sm"
         : "w-9 h-9 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-xs";
 
@@ -421,13 +421,13 @@
     const k=key();
     if (!k) return;
 
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach(scope=>mount(scope,CONFIG[k]));
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach(scope=>mount(scope,CONFIG[k]));
   }
 
   run();
 
   window.MediaGalleryRefreshFilters = function () {
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach(scope => {
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach(scope => {
       scope.dataset.mgFiltersMounted = "";
       scope.querySelectorAll(".mg-filter-panel").forEach(panel => panel.remove());
     });

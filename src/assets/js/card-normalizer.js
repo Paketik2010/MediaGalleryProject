@@ -462,7 +462,7 @@
   }
 
   function run() {
-    document.querySelectorAll(".stitch-desktop-view, .stitch-mobile-view").forEach(function(scope) {
+    document.querySelectorAll(".desktop-view, .mobile-view").forEach(function(scope) {
       normalizeArticles(scope);
       normalizeLooseCards(scope);
       normalizeRoundedDivCards(scope);

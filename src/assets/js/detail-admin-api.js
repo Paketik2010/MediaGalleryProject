@@ -71,7 +71,7 @@
   }
 
   function waitForMediaMetadata(scope, material) {
-    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const isMobile = scope.classList.contains("mobile-view");
     const container = isMobile
       ? scope.querySelector("main .aspect-video")
       : scope.querySelector("#video-container");
@@ -242,7 +242,7 @@
       const title = scope.querySelector("main h1") ||
         scope.querySelector("main .font-headline-lg-mobile");
       const infoRoot = title?.closest(".p-space-lg.rounded-xl") || title?.parentElement;
-      setMetric(infoRoot, scope.classList.contains("stitch-mobile-view") ? "favorite" : "thumb_up", likes + " лайков");
+      setMetric(infoRoot, scope.classList.contains("mobile-view") ? "favorite" : "thumb_up", likes + " лайков");
 
       const mobileLikes = scope.querySelector("#likes-count");
       if (mobileLikes) mobileLikes.textContent = likes + " лайков";
@@ -273,7 +273,7 @@
     const canDelete = user &&
       (user.role === "admin" || Number(user.id) === Number(material.author.id));
 
-    if (scope.classList.contains("stitch-desktop-view")) {
+    if (scope.classList.contains("desktop-view")) {
       const deleteButton = scope.querySelector("#delete-asset-btn");
       const editButton = scope.querySelector('a[data-path="edit-asset"]');
 
@@ -471,7 +471,7 @@
   }
 
   function setupMedia(scope, material) {
-    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const isMobile = scope.classList.contains("mobile-view");
     const container = isMobile
       ? scope.querySelector("main .aspect-video")
       : scope.querySelector("#video-container");
@@ -505,7 +505,7 @@
   }
 
   function applyTechnicalSpecs(scope, material, meta = {}) {
-    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const isMobile = scope.classList.contains("mobile-view");
     const info = MG.typeInfo(material.type);
     const format = formatName(material);
     const resolution = resolutionText(meta.width, meta.height);
@@ -851,8 +851,8 @@
 
     const material = result.material;
 
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach((scope) => {
-      if (scope.classList.contains("stitch-desktop-view")) {
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach((scope) => {
+      if (scope.classList.contains("desktop-view")) {
         hydrateDesktop(scope, material);
       } else {
         hydrateMobile(scope, material);
@@ -918,7 +918,7 @@
       MG.api("admin_materials")
     ]);
 
-    document.querySelectorAll(".stitch-desktop-view main,.stitch-mobile-view main").forEach((main) => {
+    document.querySelectorAll(".desktop-view main,.mobile-view main").forEach((main) => {
       main.innerHTML = adminHtml(usersResult.users, materialsResult.materials);
     });
   }
@@ -926,7 +926,7 @@
   loadDetail().catch((error) => {
     if (MG.page !== "detail.html") return;
 
-    document.querySelectorAll(".stitch-desktop-view main,.stitch-mobile-view main").forEach((main) => {
+    document.querySelectorAll(".desktop-view main,.mobile-view main").forEach((main) => {
       main.innerHTML =
         '<div class="w-full max-w-[760px] mx-auto px-margin-mobile md:px-margin py-space-xl">' +
           '<div class="rounded-2xl bg-surface-container-lowest shadow-sm p-space-xl text-center">' +

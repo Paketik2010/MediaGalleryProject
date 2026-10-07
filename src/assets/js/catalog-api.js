@@ -16,7 +16,7 @@
     const query = type ? "?type=" + encodeURIComponent(type) : "";
     const result = await MG.api("materials", { query });
 
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach((scope) => {
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach((scope) => {
       MG.renderCards(scope, result.materials);
     });
 
@@ -63,7 +63,7 @@
       audio: all.materials.filter((item) => item.type === "audio").length
     };
 
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach((scope) => {
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach((scope) => {
       const input = scope.querySelector("#searchInput, #search-input, input[aria-label='Поисковый запрос']");
       const firstCard = scope.querySelector(".mg-card");
 

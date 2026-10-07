@@ -267,7 +267,7 @@
   }
 
   function updateMobileSpecific(scope) {
-    if (!scope.classList.contains("stitch-mobile-view")) return;
+    if (!scope.classList.contains("mobile-view")) return;
 
     const topFormatBadge = [...scope.querySelectorAll("span")].find((el) =>
       el.className.includes("rounded-full") &&
@@ -484,5 +484,5 @@
   }
 
   document.title = cfg.title + " — MediaGallery";
-  document.querySelectorAll(".stitch-desktop-view, .stitch-mobile-view").forEach(updateScope);
+  document.querySelectorAll(".desktop-view, .mobile-view").forEach(updateScope);
 })();

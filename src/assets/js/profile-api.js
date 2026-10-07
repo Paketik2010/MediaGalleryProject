@@ -224,7 +224,7 @@
     });
     const cards = [...scope.querySelectorAll(".mg-card")];
     const container = cards[0]?.parentElement || null;
-    const pageSize = scope.classList.contains("stitch-mobile-view") ? 4 : 6;
+    const pageSize = scope.classList.contains("mobile-view") ? 4 : 6;
     const ui = paginationUi(scope);
     const desktopSort = scope.querySelector("select");
     const clearButton = search?.parentElement?.querySelector('button[aria-label="Очистить"]') || null;
@@ -292,10 +292,10 @@
       const end = total ? Math.min(currentPage * pageSize, total) : 0;
       ui.status.textContent = "Показано " + start + (start !== end ? "–" + end : "") + " из " + total + " материалов";
 
-      const base = scope.classList.contains("stitch-mobile-view")
+      const base = scope.classList.contains("mobile-view")
         ? "w-9 h-9 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-sm"
         : "w-9 h-9 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center shadow-xs transition-colors";
-      const active = scope.classList.contains("stitch-mobile-view")
+      const active = scope.classList.contains("mobile-view")
         ? "w-9 h-9 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center shadow-sm"
         : "w-9 h-9 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-xs";
 
@@ -465,7 +465,7 @@
 
     const result = await MG.api("materials", { query: "?mine=1" });
 
-    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach((scope) => {
+    document.querySelectorAll(".desktop-view,.mobile-view").forEach((scope) => {
       updateText(scope, user);
       MG.renderCards(scope, result.materials, true);
       updateCounters(scope, result.materials);
