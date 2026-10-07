@@ -50,7 +50,7 @@
       backIcon?.closest('button')?.remove();
     }
 
-    if (/\/(images|videos|audio)\.html$/.test(pathname)) {
+    if (/\/(gallery|images|videos|audio)\.html$/.test(pathname)) {
       const content = mobile.querySelector('main > div');
       const intro = [...(content?.children || [])].find((node) => node.querySelector?.('h1'));
       if (intro) intro.style.display = 'none';
