@@ -320,10 +320,18 @@
     padding: 0.875rem 1rem 1rem !important;
   }
 
-  .mobile-view .mg-mobile-catalog-grid .mg-card__description,
-  .mobile-view .mg-mobile-catalog-grid .mg-card__save,
+  .mobile-view .mg-mobile-catalog-grid .mg-card__description {
+    display: block !important;
+  }
+
   .mobile-view .mg-mobile-catalog-grid .mg-card__type {
     display: flex !important;
+  }
+
+  .mobile-view .mg-mobile-catalog-grid .mg-card__save {
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
   }
 
   .mobile-view .mg-mobile-catalog-list {
@@ -461,10 +469,20 @@
   }
 
   .mobile-view .mg-card__save {
+    display: grid !important;
     width: 2.25rem;
     height: 2.25rem;
-    top: 0.625rem;
-    right: 0.625rem;
+    top: 0.75rem;
+    right: 0.75rem;
+    place-items: center !important;
+    padding: 0 !important;
+    line-height: 1;
+  }
+
+  .mobile-view .mg-card__save .material-symbols-outlined {
+    display: block;
+    margin: 0;
+    line-height: 1;
   }
 
   .mobile-view .mg-card__type {

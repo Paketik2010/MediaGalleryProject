@@ -404,8 +404,8 @@
 
       if (key === "images") {
         if (type) type.textContent = "ФОТО";
-        if (save) save.setAttribute("aria-label", "В избранное");
-        if (saveIcon) saveIcon.textContent = "favorite_border";
+        if (save) save.setAttribute("aria-label", "Сохранить");
+        if (saveIcon) saveIcon.textContent = "bookmark_border";
       } else if (key === "videos") {
         if (type) type.textContent = "ВИДЕО";
       }

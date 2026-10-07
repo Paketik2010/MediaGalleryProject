@@ -347,6 +347,12 @@
       var cls = typeof card.className === "string" ? card.className : "";
       var rounded = cls.indexOf("rounded-xl") !== -1 || cls.indexOf("rounded-2xl") !== -1;
       var surfaced = cls.indexOf("bg-surface-container-lowest") !== -1 || cls.indexOf("bg-white") !== -1;
+
+      if (location.pathname.toLowerCase().indexOf("/profile") !== -1) {
+        var profileHeading = card.querySelector("h2");
+        if (clean(profileHeading && profileHeading.textContent) === "Мои материалы") return;
+      }
+
       if (!rounded || !surfaced || !mediaCandidate(card) || !allowLooseCard(card)) return;
 
       var nestedCandidates = Array.from(card.querySelectorAll("div")).filter(function(child) {
