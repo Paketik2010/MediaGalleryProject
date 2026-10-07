@@ -330,17 +330,33 @@
 
     if (page === "gallery.html") {
       const typeChips = [...scope.querySelectorAll(".filter-chip[data-type]")];
+      const mobileTypeLabels = {
+        all: "Все",
+        image: "Изображения",
+        video: "Видео",
+        audio: "Аудио"
+      };
+
+      typeChips.forEach((chip) => {
+        chip.type = "button";
+        chip.textContent = mobileTypeLabels[chip.dataset.type] || chip.textContent.trim();
+        chip.classList.remove("gap-1.5");
+        chip.classList.add("px-3.5", "py-1.5", "whitespace-nowrap");
+      });
 
       function setActiveTypeChip(active) {
         typeChips.forEach((chip) => {
           const isActive = chip === active;
-          chip.classList.toggle("bg-primary-container", isActive);
+          chip.classList.toggle("bg-primary", isActive);
+          chip.classList.toggle("bg-primary-container", false);
           chip.classList.toggle("text-on-primary", isActive);
           chip.classList.toggle("shadow-sm", isActive);
           chip.classList.toggle("bg-surface-container", !isActive);
           chip.classList.toggle("text-on-surface-variant", !isActive);
         });
       }
+
+      if (typeChips[0]) setActiveTypeChip(typeChips[0]);
 
       typeChips.forEach((chip) => {
         chip.type = "button";
@@ -368,14 +384,82 @@
         });
       });
 
-      const viewToggle = scope.querySelector("#viewToggleBtn");
-      viewToggle?.addEventListener("click", () => {
-        state.list = !state.list;
-        const icon = viewToggle.querySelector(".material-symbols-outlined");
-        if (icon) icon.textContent = state.list ? "grid_view" : "view_agenda";
-        viewToggle.setAttribute("aria-label", state.list ? "Показать сеткой" : "Показать списком");
-        render();
-      });
+      scope.querySelector("#viewToggleBtn")?.remove();
+
+      const gallerySortButton = scope.querySelector("#sortDropdownBtn");
+      const gallerySortHost = gallerySortButton?.parentElement;
+      const gallerySortRow = gallerySortHost?.parentElement;
+      scope.querySelector("#quickTagsBtn")?.remove();
+
+      if (gallerySortButton && gallerySortHost) {
+        gallerySortHost.className = "relative flex items-center gap-1.5 text-on-surface-variant";
+
+        const existingCaption = [...gallerySortButton.querySelectorAll("span")].find((node) =>
+          /^Сортировка:/i.test(clean(node.textContent))
+        );
+        existingCaption?.remove();
+
+        const existingArrow = [...gallerySortButton.querySelectorAll(".material-symbols-outlined")].pop();
+        if (existingArrow) {
+          existingArrow.textContent = "expand_more";
+          existingArrow.className = "material-symbols-outlined text-[16px]";
+        }
+
+        gallerySortButton.className = "font-label-md text-label-md text-primary font-semibold flex items-center gap-0.5";
+
+        const sortIcon = document.createElement("span");
+        sortIcon.className = "material-symbols-outlined text-[16px]";
+        sortIcon.textContent = "swap_vert";
+
+        const sortCaption = document.createElement("span");
+        sortCaption.className = "font-label-caps text-label-caps uppercase tracking-wider text-outline";
+        sortCaption.textContent = "Сортировка:";
+
+        gallerySortHost.insertBefore(sortCaption, gallerySortButton);
+        gallerySortHost.insertBefore(sortIcon, sortCaption);
+      }
+
+      if (gallerySortRow) {
+        const viewControls = document.createElement("div");
+        viewControls.className = "flex items-center gap-1.5";
+        viewControls.innerHTML =
+          '<button type="button" data-mobile-view="grid" aria-label="Вид сеткой" aria-pressed="true" class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary shadow-sm transition-colors">' +
+            '<span class="material-symbols-outlined text-[18px]">grid_view</span>' +
+          '</button>' +
+          '<button type="button" data-mobile-view="list" aria-label="Вид списком" aria-pressed="false" class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors">' +
+            '<span class="material-symbols-outlined text-[18px]">view_agenda</span>' +
+          '</button>';
+        gallerySortRow.appendChild(viewControls);
+
+        const gridButton = viewControls.querySelector('[data-mobile-view="grid"]');
+        const listButton = viewControls.querySelector('[data-mobile-view="list"]');
+
+        const syncViewButtons = () => {
+          [[gridButton, !state.list], [listButton, state.list]].forEach(([button, active]) => {
+            if (!button) return;
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+            button.classList.toggle("bg-primary", active);
+            button.classList.toggle("text-on-primary", active);
+            button.classList.toggle("shadow-sm", active);
+            button.classList.toggle("bg-surface-container-low", !active);
+            button.classList.toggle("text-on-surface-variant", !active);
+          });
+        };
+
+        gridButton?.addEventListener("click", () => {
+          state.list = false;
+          syncViewButtons();
+          render();
+        });
+
+        listButton?.addEventListener("click", () => {
+          state.list = true;
+          syncViewButtons();
+          render();
+        });
+
+        syncViewButtons();
+      }
 
       const drawer = scope.querySelector("#filterDrawerBackdrop");
       const categoryHeading = drawer

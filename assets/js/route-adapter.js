@@ -50,7 +50,7 @@
       backIcon?.closest('button')?.remove();
     }
 
-    if (/\/(images|videos|audio)\.html$/.test(pathname)) {
+    if (/\/(gallery|images|videos|audio)\.html$/.test(pathname)) {
       const content = mobile.querySelector('main > div');
       const intro = [...(content?.children || [])].find((node) => node.querySelector?.('h1'));
       if (intro) intro.style.display = 'none';
@@ -260,6 +260,6 @@
     const path = link.dataset.path;
     if (!routes[path]) return;
     event.preventDefault();
-    window.location.href = location.hostname.endsWith("github.io") ? routes[path] + (routes[path].includes("?") ? "&" : "?") + "v=20261007m3" : routes[path];
+    window.location.href = location.hostname.endsWith("github.io") ? routes[path] + (routes[path].includes("?") ? "&" : "?") + "v=20261008m6" : routes[path];
   });
 })();
