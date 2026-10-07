@@ -28,6 +28,40 @@
     'panel-administratora': root + 'pages/admin.html'
   };
 
+  const polishMobileOnly = () => {
+    const mobile = document.querySelector('.mobile-view');
+    if (!mobile) return;
+
+    const pathname = window.location.pathname.toLowerCase();
+    const header = mobile.querySelector('header');
+
+    header?.querySelectorAll('img[src*="logo.svg"]').forEach((logo) => {
+      logo.dataset.path = 'main';
+      logo.setAttribute('role', 'link');
+      logo.setAttribute('aria-label', '\u041d\u0430 \u0433\u043b\u0430\u0432\u043d\u0443\u044e');
+      logo.tabIndex = 0;
+      logo.style.cursor = 'pointer';
+    });
+
+    if (pathname.endsWith('/detail.html')) {
+      const backIcon = [...(header?.querySelectorAll('.material-symbols-outlined') || [])].find((icon) => {
+        return icon.textContent.trim() === 'arrow_back';
+      });
+      backIcon?.closest('button')?.remove();
+    }
+
+    if (/\/(images|videos|audio)\.html$/.test(pathname)) {
+      const content = mobile.querySelector('main > div');
+      const intro = [...(content?.children || [])].find((node) => node.querySelector?.('h1'));
+      if (intro) intro.style.display = 'none';
+    }
+
+    if (pathname.endsWith('/search.html')) {
+      const searchSection = mobile.querySelector('main section');
+      const headingRow = [...(searchSection?.children || [])].find((node) => node.querySelector?.('h1'));
+      if (headingRow) headingRow.style.display = 'none';
+    }
+  };
   const ensureDesktopSearchLink = () => {
     document.querySelectorAll('.desktop-view header nav').forEach((nav) => {
       if (nav.querySelector('a[data-path="search"]')) return;
@@ -81,7 +115,7 @@
       item('videos', 'movie', 'Видео', 'videos') +
       item('search', 'search', 'Поиск', 'search', ' mg-mobile-nav__search') +
       item('audio', 'audiotrack', 'Аудио', 'audio') +
-      item('login', 'account_circle', 'Войти', 'account', ' mg-mobile-nav__account') +
+      item('gallery', 'photo_library', '\u0413\u0430\u043b\u0435\u0440\u0435\u044f', 'gallery') +
     '</div>';
 
     mobile.appendChild(nav);
@@ -178,6 +212,7 @@
     });
   };
 
+  polishMobileOnly();
   ensureDesktopSearchLink();
   ensureMobileNav();
   ensureMobileMenu();
@@ -225,6 +260,6 @@
     const path = link.dataset.path;
     if (!routes[path]) return;
     event.preventDefault();
-    window.location.href = location.hostname.endsWith("github.io") ? routes[path] + (routes[path].includes("?") ? "&" : "?") + "v=20261007m2" : routes[path];
+    window.location.href = location.hostname.endsWith("github.io") ? routes[path] + (routes[path].includes("?") ? "&" : "?") + "v=20261007m3" : routes[path];
   });
 })();
