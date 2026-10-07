@@ -1,75 +1,553 @@
 (() => {
   if (!window.MG) return;
 
-  function player(material) {
+  function humanSize(bytes) {
+    const value = Number(bytes || 0);
+
+    if (!value) return "—";
+    if (value < 1024 * 1024) return Math.max(1, Math.round(value / 1024)) + " КБ";
+    if (value < 1024 * 1024 * 1024) return (value / 1024 / 1024).toFixed(1) + " МБ";
+
+    return (value / 1024 / 1024 / 1024).toFixed(2) + " ГБ";
+  }
+
+  function fullDate(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "Недавно";
+
+    return new Intl.DateTimeFormat("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(date);
+  }
+
+  function formatTime(seconds) {
+    const value = Math.max(0, Number(seconds || 0));
+    const minutes = Math.floor(value / 60);
+    const rest = Math.floor(value % 60);
+    return String(minutes).padStart(2, "0") + ":" + String(rest).padStart(2, "0");
+  }
+
+  function formatName(material) {
+    const name = String(material.originalName || "");
+    const ext = name.includes(".") ? name.split(".").pop().toUpperCase() : "";
+
+    if (ext) return ext;
+    if (material.mimeType) return material.mimeType;
+
+    return material.type === "image" ? "Изображение" :
+      material.type === "audio" ? "Аудио" : "Видео";
+  }
+
+  function setMetric(root, iconName, value) {
+    if (!root) return;
+
+    const icon = [...root.querySelectorAll(".material-symbols-outlined")].find((node) => {
+      return node.textContent.trim() === iconName;
+    });
+
+    if (!icon) return;
+
+    const row = icon.parentElement;
+    if (!row) return;
+
+    [...row.childNodes].forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) node.remove();
+    });
+
+    const valueNode = [...row.children].find((node) => node !== icon);
+
+    if (valueNode) {
+      valueNode.textContent = value;
+    } else {
+      row.append(document.createTextNode(" " + value));
+    }
+  }
+
+  function updateBadges(row, material) {
+    if (!row) return;
+
+    const badges = [...row.children].filter((node) => node.tagName === "SPAN");
+    const info = MG.typeInfo(material.type);
+
+    if (badges[0]) badges[0].textContent = info.label;
+    if (badges[1]) badges[1].textContent = material.category;
+    if (badges[2]) badges[2].textContent = formatName(material);
+    if (badges[3]) badges[3].hidden = true;
+  }
+
+  function downloadMaterial(material) {
+    const source = MG.mediaUrl(material.fileUrl || material.sourceUrl || "");
+    if (!source) {
+      MG.toast("Файл недоступен", true);
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = source;
+    link.download = material.originalName || "";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  function bindLike(scope, material) {
+    const desktopButton = [...scope.querySelectorAll("button")].find((button) => {
+      return button.title === "Закладки";
+    });
+    const mobileButton = scope.querySelector("#btn-favorite");
+    const button = desktopButton || mobileButton;
+
+    if (!button) return;
+
+    button.removeAttribute("onclick");
+
+    const icon = button.querySelector(".material-symbols-outlined");
+
+    function draw(liked, likes) {
+      material.liked = liked;
+      material.likes = likes;
+
+      if (mobileButton && icon) {
+        icon.textContent = "favorite";
+        icon.style.fontVariationSettings = liked ? "'FILL' 1" : "'FILL' 0";
+        icon.classList.toggle("text-error", liked);
+      } else if (icon) {
+        icon.textContent = liked ? "bookmark" : "bookmark_border";
+        icon.style.fontVariationSettings = liked ? "'FILL' 1" : "'FILL' 0";
+      }
+
+      const title = scope.querySelector("main h1") ||
+        scope.querySelector("main .font-headline-lg-mobile");
+      const infoRoot = title?.closest(".p-space-lg.rounded-xl") || title?.parentElement;
+      setMetric(infoRoot, scope.classList.contains("stitch-mobile-view") ? "favorite" : "thumb_up", likes + " лайков");
+
+      const mobileLikes = scope.querySelector("#likes-count");
+      if (mobileLikes) mobileLikes.textContent = likes + " лайков";
+    }
+
+    draw(Boolean(material.liked), Number(material.likes || 0));
+
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      try {
+        const result = await MG.api("like", {
+          method: "POST",
+          json: { id: material.id }
+        });
+        draw(result.liked, result.likes);
+      } catch (error) {
+        if (error.status === 401) {
+          location.href = MG.pageFile("login.html");
+          return;
+        }
+        MG.toast(error.message, true);
+      }
+    });
+  }
+
+  function bindDelete(scope, material, user) {
+    const canDelete = user &&
+      (user.role === "admin" || Number(user.id) === Number(material.author.id));
+
+    if (scope.classList.contains("stitch-desktop-view")) {
+      const deleteButton = scope.querySelector("#delete-asset-btn");
+      const editButton = scope.querySelector('a[data-path="edit-asset"]');
+
+      if (editButton) editButton.style.display = "none";
+      if (deleteButton) deleteButton.style.display = canDelete ? "" : "none";
+
+      const confirmButton = scope.querySelector("#confirm-delete-btn");
+
+      if (confirmButton && canDelete) {
+        confirmButton.addEventListener("click", async () => {
+          try {
+            await MG.api("delete_material", {
+              method: "POST",
+              json: { id: material.id }
+            });
+            location.href = MG.pageFile("gallery.html");
+          } catch (error) {
+            MG.toast(error.message, true);
+          }
+        });
+      }
+
+      return;
+    }
+
+    const buttons = [...scope.querySelectorAll("button")].filter((button) => {
+      return button.textContent.trim() === "Удалить";
+    });
+
+    buttons.forEach((button) => {
+      button.style.display = canDelete ? "" : "none";
+
+      if (!canDelete) return;
+
+      button.addEventListener("click", async () => {
+        if (!confirm("Удалить этот материал?")) return;
+
+        try {
+          await MG.api("delete_material", {
+            method: "POST",
+            json: { id: material.id }
+          });
+          location.href = MG.pageFile("gallery.html");
+        } catch (error) {
+          MG.toast(error.message, true);
+        }
+      });
+    });
+
+    [...scope.querySelectorAll("button")].forEach((button) => {
+      if (button.textContent.trim() === "Редактировать") button.style.display = "none";
+    });
+  }
+
+  function setupRealVideo(scope, container, material) {
     const source = MG.mediaUrl(material.fileUrl || material.sourceUrl || "");
     const poster = MG.mediaUrl(material.thumbnailUrl || "");
 
-    if (material.type === "image") {
-      return source
-        ? '<img class="w-full max-h-[70vh] object-contain rounded-2xl bg-surface-container-lowest shadow-sm" src="' + MG.esc(source) + '" alt="' + MG.esc(material.title) + '">'
-        : '<div class="aspect-video rounded-2xl bg-surface-container flex items-center justify-center"><span class="material-symbols-outlined text-[64px] text-outline">image</span></div>';
+    if (!source) return;
+
+    const cover = container.querySelector("[data-alt]");
+
+    if (cover) {
+      cover.style.backgroundImage = poster ? "url('" + poster.replace(/'/g, "%27") + "')" : "none";
+      cover.style.backgroundColor = "#111827";
+      cover.style.transition = "opacity .18s ease";
     }
+
+    const video = document.createElement("video");
+    video.src = source;
+    video.preload = "metadata";
+    video.playsInline = true;
+    video.className = "absolute inset-0 w-full h-full object-contain bg-black";
+    video.style.zIndex = "0";
+    container.prepend(video);
+
+    const centerButton = container.querySelector("#center-play-btn");
+    const barButton = container.querySelector("#bar-play-btn") ||
+      [...container.querySelectorAll("button")].find((button) => {
+        return button.querySelector("#bottom-play-icon");
+      });
+    const centerIcon = container.querySelector("#center-play-icon");
+    const barIcon = container.querySelector("#bar-play-icon") ||
+      container.querySelector("#bottom-play-icon");
+    const current = container.querySelector("#time-current");
+    const total = container.querySelector("#time-total");
+    const mobileTime = [...container.querySelectorAll("span")].find((node) => {
+      return /^\d{2}:\d{2}\s*\/\s*\d{2}:\d{2}$/.test(node.textContent.trim());
+    });
+    const scrubber = container.querySelector("#scrubber-container") ||
+      [...container.querySelectorAll("div")].find((node) => {
+        return String(node.getAttribute("onclick") || "").includes("handleScrub");
+      });
+    const fill = container.querySelector("#scrubber-fill") ||
+      container.querySelector("#playback-fill");
+    const thumb = container.querySelector("#scrubber-thumb");
+    const fullscreen = container.querySelector("#fullscreen-btn") ||
+      container.querySelector('button[title="На весь экран"]');
+
+    [centerButton, barButton].forEach((button) => {
+      if (!button) return;
+      button.removeAttribute("onclick");
+
+      button.addEventListener("click", () => {
+        if (video.paused) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    });
+
+    if (scrubber) {
+      scrubber.removeAttribute("onclick");
+      scrubber.addEventListener("click", (event) => {
+        if (!Number.isFinite(video.duration) || !video.duration) return;
+
+        const rect = scrubber.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+        video.currentTime = video.duration * ratio;
+      });
+    }
+
+    fullscreen?.addEventListener("click", () => {
+      container.requestFullscreen?.();
+    });
+
+    function updateIcons() {
+      const name = video.paused ? "play_arrow" : "pause";
+      if (centerIcon) centerIcon.textContent = name;
+      if (barIcon) barIcon.textContent = name;
+    }
+
+    function updateTime() {
+      if (!Number.isFinite(video.duration) || !video.duration) return;
+
+      const ratio = Math.max(0, Math.min(1, video.currentTime / video.duration));
+      const percent = (ratio * 100).toFixed(2) + "%";
+
+      if (fill) fill.style.width = percent;
+      if (thumb) thumb.style.left = percent;
+      if (current) current.textContent = formatTime(video.currentTime);
+      if (total) total.textContent = formatTime(video.duration);
+      if (mobileTime) {
+        mobileTime.textContent = formatTime(video.currentTime) + " / " + formatTime(video.duration);
+      }
+    }
+
+    video.addEventListener("play", () => {
+      if (cover) cover.style.opacity = "0";
+      updateIcons();
+    });
+
+    video.addEventListener("pause", updateIcons);
+    video.addEventListener("timeupdate", updateTime);
+    video.addEventListener("loadedmetadata", () => {
+      updateTime();
+
+      const quality = video.videoHeight ? video.videoHeight + "p" : formatName(material);
+
+      [...scope.querySelectorAll("span,button")].forEach((node) => {
+        const text = node.textContent.trim();
+        if (text === "1080p 60fps" || text === "1080p HD" || text === "1080p Full HD" || text === "1080p") {
+          node.textContent = quality;
+        }
+      });
+
+      const about = [...scope.querySelectorAll("h2")].find((node) => {
+        return node.textContent.trim() === "О материале";
+      })?.closest(".p-space-lg.rounded-xl");
+
+      if (about) {
+        [...about.querySelectorAll('[class~="py-2.5"]')].forEach((row) => {
+          const label = row.querySelector(".text-on-surface-variant")?.textContent.trim();
+          const value = row.querySelector(".font-semibold");
+
+          if (label === "Разрешение" && value) {
+            value.textContent = video.videoWidth + " × " + video.videoHeight;
+          }
+
+          if (label === "Длительность" && value) {
+            value.textContent = formatTime(video.duration);
+          }
+        });
+      }
+    });
+  }
+
+  function setupMedia(scope, material) {
+    const isMobile = scope.classList.contains("stitch-mobile-view");
+    const container = isMobile
+      ? scope.querySelector("main .aspect-video")
+      : scope.querySelector("#video-container");
+
+    if (!container) return;
+
+    const source = MG.mediaUrl(material.fileUrl || material.sourceUrl || "");
+    const poster = MG.mediaUrl(material.thumbnailUrl || "");
 
     if (material.type === "video") {
-      return source
-        ? '<video class="w-full rounded-2xl bg-black shadow-xl" controls preload="metadata"' + (poster ? ' poster="' + MG.esc(poster) + '"' : "") + ' src="' + MG.esc(source) + '"></video>'
-        : '<div class="aspect-video rounded-2xl bg-inverse-surface flex items-center justify-center text-white"><span class="material-symbols-outlined text-[64px]">videocam</span></div>';
+      setupRealVideo(scope, container, material);
+      return;
     }
 
-    return '<div class="rounded-2xl bg-surface-container-lowest shadow-sm p-space-xl flex flex-col items-center gap-space-lg">' +
-      (poster
-        ? '<img class="w-48 h-48 rounded-2xl object-cover shadow-md" src="' + MG.esc(poster) + '" alt="">'
-        : '<div class="w-48 h-48 rounded-2xl bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[64px] text-tertiary">headphones</span></div>') +
-      (source
-        ? '<audio class="w-full" controls preload="metadata" src="' + MG.esc(source) + '"></audio>'
-        : '<p class="text-outline">Аудиофайл недоступен</p>') +
+    if (material.type === "image") {
+      container.innerHTML = source
+        ? '<img class="w-full h-full object-contain bg-black" src="' + MG.esc(source) + '" alt="' + MG.esc(material.title) + '">'
+        : '<div class="w-full h-full flex items-center justify-center bg-surface-container"><span class="material-symbols-outlined text-[64px] text-outline">image</span></div>';
+      return;
+    }
+
+    container.innerHTML =
+      '<div class="w-full h-full flex flex-col items-center justify-center gap-4 p-6 bg-inverse-surface">' +
+        (poster
+          ? '<img class="w-40 h-40 rounded-xl object-cover shadow-lg" src="' + MG.esc(poster) + '" alt="">'
+          : '<div class="w-32 h-32 rounded-full bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-[58px] text-tertiary">headphones</span></div>') +
+        (source
+          ? '<audio class="w-full max-w-xl" controls preload="metadata" src="' + MG.esc(source) + '"></audio>'
+          : '<p class="text-inverse-on-surface">Аудиофайл недоступен</p>') +
       '</div>';
   }
 
-  function detailHtml(material, user) {
-    const info = MG.typeInfo(material.type);
-    const canDelete = user && (user.role === "admin" || Number(user.id) === Number(material.author.id));
+  function hydrateDesktop(scope, material) {
+    const title = scope.querySelector("main h1");
+    if (!title) return;
 
-    return '<div class="max-w-[1180px] mx-auto w-full px-margin py-space-lg">' +
-      '<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">' +
-        '<div class="lg:col-span-8 flex flex-col gap-space-lg">' +
-          player(material) +
-          '<section class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm">' +
-            '<div class="flex flex-wrap items-center gap-2 mb-space-sm">' +
-              '<span class="px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps uppercase font-semibold">' + MG.esc(info.label) + '</span>' +
-              '<span class="px-3 py-1 rounded-full bg-secondary-fixed text-secondary font-label-caps text-label-caps uppercase font-semibold">' + MG.esc(material.category) + '</span>' +
-            '</div>' +
-            '<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">' + MG.esc(material.title) + '</h1>' +
-            '<div class="flex flex-wrap gap-4 mt-2 text-body-sm text-outline">' +
-              '<span>Автор: <strong class="text-on-surface">' + MG.esc(material.author.name) + '</strong></span>' +
-              '<span>' + MG.esc(MG.dateText(material.createdAt)) + '</span>' +
-              '<span>' + Number(material.views || 0) + ' просмотров</span>' +
-            '</div>' +
-            '<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-lg whitespace-pre-line">' + MG.esc(material.description || "Без описания") + '</p>' +
-          '</section>' +
-        '</div>' +
-        '<aside class="lg:col-span-4">' +
-          '<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm">' +
-            '<h2 class="font-headline-sm text-headline-sm text-on-surface mb-space-md">О материале</h2>' +
-            '<div class="flex flex-col gap-3 text-body-md">' +
-              '<div class="flex justify-between gap-4"><span class="text-outline">Тип</span><strong>' + MG.esc(info.label) + '</strong></div>' +
-              '<div class="flex justify-between gap-4"><span class="text-outline">Категория</span><strong>' + MG.esc(material.category) + '</strong></div>' +
-              '<div class="flex justify-between gap-4"><span class="text-outline">Автор</span><strong>' + MG.esc(material.author.name) + '</strong></div>' +
-              '<div class="flex justify-between gap-4"><span class="text-outline">Лайки</span><strong>' + Number(material.likes || 0) + '</strong></div>' +
-            '</div>' +
-            '<button class="mt-space-lg w-full h-11 rounded-xl bg-primary-container text-on-primary font-label-lg flex items-center justify-center gap-2" data-api-like="' + material.id + '" aria-pressed="' + (material.liked ? "true" : "false") + '">' +
-              '<span class="material-symbols-outlined">' + (material.liked ? "favorite" : "favorite_border") + '</span>' +
-              '<span data-like-count>' + Number(material.likes || 0) + '</span>' +
-              '<span>Нравится</span>' +
-            '</button>' +
-            (canDelete
-              ? '<button class="mt-space-sm w-full h-11 rounded-xl bg-error-container text-on-error-container font-label-lg flex items-center justify-center gap-2" data-api-delete="' + material.id + '"><span class="material-symbols-outlined">delete</span><span>Удалить материал</span></button>'
-              : '') +
-          '</div>' +
-        '</aside>' +
-      '</div>' +
-    '</div>';
+    title.textContent = material.title;
+
+    const breadcrumb = scope.querySelector("main nav");
+    const breadcrumbLast = breadcrumb?.querySelector("span:last-child");
+    if (breadcrumbLast) breadcrumbLast.textContent = material.title;
+
+    const card = title.closest(".p-space-lg.rounded-xl");
+    const badgeRow = card?.querySelector(".flex.flex-wrap.items-center.gap-2");
+    updateBadges(badgeRow, material);
+
+    setMetric(card, "calendar_today", fullDate(material.createdAt));
+    setMetric(card, "visibility", Number(material.views || 0) + " просмотров");
+    setMetric(card, "thumb_up", Number(material.likes || 0) + " лайков");
+
+    const author = [...(card?.querySelectorAll('a[data-path="profile"]') || [])].find((node) => {
+      return node.classList.contains("font-title-md");
+    });
+
+    if (author) author.textContent = material.author.name;
+
+    const authorLine = card?.querySelector("p.font-body-sm");
+    if (authorLine) authorLine.textContent = "@" + material.author.username;
+
+    const descriptionTitle = [...scope.querySelectorAll("h2")].find((node) => {
+      return node.textContent.includes("Описание урока");
+    });
+
+    if (descriptionTitle) {
+      descriptionTitle.textContent = "Описание";
+      const descriptionCard = descriptionTitle.closest(".p-space-lg.rounded-xl");
+      const body = descriptionCard?.querySelector(".font-body-lg");
+
+      if (body) {
+        body.innerHTML = '<p>' + MG.esc(material.description || "Без описания") + '</p>';
+      }
+
+      const contents = [...(descriptionCard?.querySelectorAll("div") || [])].find((node) => {
+        return node.textContent.includes("Таймкоды и содержание");
+      });
+
+      if (contents) {
+        if (material.type !== "video") {
+          contents.style.display = "none";
+        } else {
+          const buttons = contents.querySelectorAll("button");
+          buttons.forEach((button, index) => {
+            button.style.display = index === 0 ? "" : "none";
+          });
+
+          const first = buttons[0]?.querySelector(".text-body-sm");
+          if (first) first.textContent = "00:00 — Начало";
+        }
+      }
+    }
+
+    const aboutTitle = [...scope.querySelectorAll("h2")].find((node) => {
+      return node.textContent.trim() === "О материале";
+    });
+    const about = aboutTitle?.closest(".p-space-lg.rounded-xl");
+
+    if (about) {
+      const values = {
+        "Тип контента": MG.typeInfo(material.type).label,
+        "Формат / Кодек": formatName(material),
+        "Разрешение": "—",
+        "Длительность": "—",
+        "Размер файла": humanSize(material.sizeBytes),
+        "Лицензия": "Учебный проект",
+        "Частота кадров": "—",
+        "Аудиодорожка": material.type === "audio" ? formatName(material) : "—"
+      };
+
+      [...about.querySelectorAll('[class~="py-2.5"]')].forEach((row) => {
+        const label = row.querySelector(".text-on-surface-variant")?.textContent.trim();
+        const value = row.querySelector(".font-semibold");
+
+        if (label && value && label in values) {
+          value.textContent = values[label];
+        }
+      });
+    }
+
+    const download = [...scope.querySelectorAll("button")].find((button) => {
+      return button.textContent.includes("Скачать оригинал");
+    });
+
+    if (download) {
+      const label = [...download.querySelectorAll("span")].find((node) => {
+        return node.textContent.includes("Скачать оригинал");
+      });
+
+      if (label) label.textContent = "Скачать оригинал" + (material.sizeBytes ? " (" + humanSize(material.sizeBytes) + ")" : "");
+      download.addEventListener("click", () => downloadMaterial(material));
+    }
+  }
+
+  function hydrateMobile(scope, material) {
+    const title = scope.querySelector("main .font-headline-lg-mobile");
+    if (!title) return;
+
+    title.textContent = material.title;
+
+    const block = title.parentElement;
+    const badgeRow = block?.querySelector(".flex.flex-wrap.items-center.gap-2");
+    updateBadges(badgeRow, material);
+
+    setMetric(block, "visibility", Number(material.views || 0) + " просмотров");
+    setMetric(block, "favorite", Number(material.likes || 0) + " лайков");
+    setMetric(block, "calendar_today", fullDate(material.createdAt));
+
+    const author = [...scope.querySelectorAll(".font-title-md")].find((node) => {
+      return node.textContent.trim() === "Алексей Смирнов";
+    });
+
+    if (author) author.textContent = material.author.name;
+
+    const aboutText = scope.querySelector("#tech-specs-content > p");
+    if (aboutText) aboutText.textContent = material.description || "Без описания";
+
+    const cells = scope.querySelectorAll("#tech-specs-content .grid > div");
+    const mobileSpecs = [
+      ["Формат", formatName(material)],
+      ["Тип", MG.typeInfo(material.type).label],
+      ["Размер", humanSize(material.sizeBytes)],
+      ["Категория", material.category]
+    ];
+
+    cells.forEach((cell, index) => {
+      if (!mobileSpecs[index]) return;
+      const spans = cell.querySelectorAll("span");
+      if (spans[0]) spans[0].textContent = mobileSpecs[index][0];
+      if (spans[1]) spans[1].textContent = mobileSpecs[index][1];
+    });
+
+    const timecodes = [...scope.querySelectorAll("h3")].find((node) => {
+      return node.textContent.trim() === "Таймкоды и содержание";
+    })?.closest(".flex.flex-col.gap-3");
+
+    if (timecodes) {
+      if (material.type !== "video") {
+        timecodes.style.display = "none";
+      } else {
+        const buttons = timecodes.querySelectorAll("button");
+        buttons.forEach((button, index) => {
+          button.style.display = index === 0 ? "" : "none";
+        });
+
+        const firstTitle = buttons[0]?.querySelector(".font-body-md");
+        if (firstTitle) firstTitle.textContent = "Начало";
+        const count = timecodes.querySelector(".font-body-sm.text-body-sm.text-outline");
+        if (count) count.textContent = "1 раздел";
+      }
+    }
+
+    const download = [...scope.querySelectorAll("button")].find((button) => {
+      return button.textContent.includes("Скачать оригинал");
+    });
+
+    if (download) {
+      download.removeAttribute("onclick");
+      const label = [...download.querySelectorAll("span")].find((node) => {
+        return node.textContent.includes("Скачать оригинал");
+      });
+
+      if (label) label.textContent = "Скачать оригинал" + (material.sizeBytes ? " (" + humanSize(material.sizeBytes) + ")" : "");
+      download.addEventListener("click", () => downloadMaterial(material));
+    }
   }
 
   async function loadDetail() {
@@ -83,8 +561,18 @@
       MG.getUser(true).catch(() => null)
     ]);
 
-    document.querySelectorAll(".stitch-desktop-view main,.stitch-mobile-view main").forEach((main) => {
-      main.innerHTML = detailHtml(result.material, user);
+    const material = result.material;
+
+    document.querySelectorAll(".stitch-desktop-view,.stitch-mobile-view").forEach((scope) => {
+      if (scope.classList.contains("stitch-desktop-view")) {
+        hydrateDesktop(scope, material);
+      } else {
+        hydrateMobile(scope, material);
+      }
+
+      setupMedia(scope, material);
+      bindLike(scope, material);
+      bindDelete(scope, material, user);
     });
   }
 

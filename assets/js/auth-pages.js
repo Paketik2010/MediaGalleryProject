@@ -22,6 +22,17 @@
     if (box) box.hidden = true;
   }
 
+  function getErrorText(error) {
+    const fields = error?.data?.fields;
+
+    if (fields && typeof fields === "object") {
+      const messages = Object.values(fields).filter(Boolean);
+      if (messages.length) return messages.join(". ");
+    }
+
+    return error?.message || "Произошла ошибка";
+  }
+
   function updatePasswordState(scope, passwordSelector, confirmSelector, force = false) {
     const password = scope.querySelector(passwordSelector);
     const confirm = scope.querySelector(confirmSelector);
@@ -93,7 +104,7 @@
 
           location.href = MG.pageFile("profile.html");
         } catch (error) {
-          showError(form, error.message);
+          showError(form, getErrorText(error));
         }
       });
     });
@@ -136,7 +147,7 @@
 
           location.href = MG.pageFile("profile.html");
         } catch (error) {
-          showError(form, error.message);
+          showError(form, getErrorText(error));
         }
       });
     }
@@ -174,7 +185,7 @@
 
           location.href = MG.pageFile("profile.html");
         } catch (error) {
-          showError(errorScope, error.message);
+          showError(errorScope, getErrorText(error));
         }
       });
     }

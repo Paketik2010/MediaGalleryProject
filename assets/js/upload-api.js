@@ -7,23 +7,73 @@
     if (!box) {
       box = document.createElement("div");
       box.dataset.uploadError = "1";
-      box.style.cssText = "padding:12px 14px;border-radius:12px;background:#ffdad6;color:#93000a;font:500 13px/18px Inter,sans-serif";
+      box.style.cssText =
+        "padding:12px 14px;border-radius:12px;background:#ffdad6;color:#93000a;" +
+        "font:500 13px/18px Inter,sans-serif";
       scope.prepend(box);
     }
 
     box.textContent = text;
   }
 
+  function typeFromFile(file) {
+    const mime = String(file?.type || "").toLowerCase();
+
+    if (mime.startsWith("image/")) return "image";
+    if (mime.startsWith("video/")) return "video";
+    if (mime.startsWith("audio/")) return "audio";
+
+    const name = String(file?.name || "").toLowerCase();
+
+    if (/\.(jpg|jpeg|png|webp|gif)$/.test(name)) return "image";
+    if (/\.(mp4|webm|ogv|ogg)$/.test(name)) return "video";
+    if (/\.(mp3|wav|m4a|aac|flac|oga)$/.test(name)) return "audio";
+
+    return "";
+  }
+
   function currentType(scope) {
+    if (scope._selectedUploadFile) {
+      return typeFromFile(scope._selectedUploadFile) || scope.dataset.uploadType || "video";
+    }
+
     const radio = scope.querySelector('input[name="media_type"]:checked');
     if (radio) return radio.value;
+
     return scope.dataset.uploadType || "video";
+  }
+
+  function selectType(scope, type) {
+    if (!["image", "video", "audio"].includes(type)) return;
+
+    scope.dataset.uploadType = type;
+
+    scope.querySelectorAll('input[name="media_type"]').forEach((radio) => {
+      radio.checked = radio.value === type;
+    });
+
+    scope.querySelectorAll("[data-upload-type-button]").forEach((item) => {
+      const active = item.dataset.uploadTypeButton === type;
+      item.style.outline = active ? "2px solid #4f46e5" : "";
+      item.style.outlineOffset = active ? "1px" : "";
+    });
   }
 
   function setupTypeButtons(scope) {
     scope.querySelectorAll('input[name="media_type"]').forEach((radio) => {
       radio.addEventListener("change", () => {
-        if (radio.checked) scope.dataset.uploadType = radio.value;
+        if (!radio.checked) return;
+
+        if (scope._selectedUploadFile) {
+          const detected = typeFromFile(scope._selectedUploadFile);
+          if (detected && detected !== radio.value) {
+            selectType(scope, detected);
+            MG.toast("Тип определяется по загруженному файлу");
+            return;
+          }
+        }
+
+        selectType(scope, radio.value);
       });
     });
 
@@ -38,13 +88,84 @@
       card.dataset.uploadTypeButton = type;
 
       card.addEventListener("click", () => {
-        scope.dataset.uploadType = type;
+        if (scope._selectedUploadFile) {
+          const detected = typeFromFile(scope._selectedUploadFile);
 
-        scope.querySelectorAll("[data-upload-type-button]").forEach((item) => {
-          item.style.outline = item === card ? "2px solid #4f46e5" : "";
-          item.style.outlineOffset = item === card ? "1px" : "";
-        });
+          if (detected && detected !== type) {
+            selectType(scope, detected);
+            MG.toast("Тип уже определён по файлу");
+            return;
+          }
+        }
+
+        selectType(scope, type);
       });
+    });
+  }
+
+  function makeVideoThumbnail(file) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const video = document.createElement("video");
+      let done = false;
+
+      function finish(result) {
+        if (done) return;
+        done = true;
+        URL.revokeObjectURL(url);
+        video.remove();
+        resolve(result || null);
+      }
+
+      video.muted = true;
+      video.preload = "metadata";
+      video.playsInline = true;
+
+      video.addEventListener("loadedmetadata", () => {
+        const target = Number.isFinite(video.duration) && video.duration > 1
+          ? Math.min(1, video.duration / 3)
+          : 0;
+        try {
+          video.currentTime = target;
+        } catch (_) {
+          finish(null);
+        }
+      }, { once: true });
+
+      video.addEventListener("seeked", () => {
+        if (!video.videoWidth || !video.videoHeight) {
+          finish(null);
+          return;
+        }
+
+        const maxWidth = 1280;
+        const scale = Math.min(1, maxWidth / video.videoWidth);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+        canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+
+        const context = canvas.getContext("2d");
+        if (!context) {
+          finish(null);
+          return;
+        }
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            finish(null);
+            return;
+          }
+
+          finish(new File([blob], "video-preview.jpg", {
+            type: "image/jpeg"
+          }));
+        }, "image/jpeg", 0.82);
+      }, { once: true });
+
+      video.addEventListener("error", () => finish(null), { once: true });
+      video.src = url;
     });
   }
 
@@ -58,23 +179,42 @@
 
     const input = document.createElement("input");
     input.type = "file";
+    input.accept = "image/*,video/*,audio/*";
     input.hidden = true;
     input.dataset.uploadFile = "1";
     dropzone.appendChild(input);
 
-    function updateAccept() {
-      const type = currentType(scope);
-      input.accept = type === "image" ? "image/*" : type === "audio" ? "audio/*" : "video/*";
-    }
-
-    function showFile(file) {
+    async function showFile(file) {
       scope._selectedUploadFile = file || null;
-      if (file && label) label.textContent = file.name;
+      scope._videoThumbnail = null;
+
+      if (!file) return;
+
+      const detected = typeFromFile(file);
+
+      if (!detected) {
+        showError(scope, "Поддерживаются только изображения, видео и аудио");
+        scope._selectedUploadFile = null;
+        return;
+      }
+
+      selectType(scope, detected);
+
+      if (label) {
+        label.textContent = file.name;
+      }
+
+      if (detected === "video") {
+        scope._videoThumbnail = await makeVideoThumbnail(file);
+
+        if (!scope._videoThumbnail) {
+          MG.toast("Видео загрузится, но кадр-превью создать не удалось");
+        }
+      }
     }
 
     dropzone.addEventListener("click", (event) => {
       if (event.target.closest("button")) return;
-      updateAccept();
       input.click();
     });
 
@@ -104,7 +244,9 @@
           input.type = "url";
           input.placeholder = "https://example.com/media.mp4";
           input.dataset.uploadLink = "1";
-          input.className = "w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface font-body-md text-body-md shadow-sm outline-none focus:shadow-md mt-2";
+          input.className =
+            "w-full h-11 px-3.5 rounded-xl bg-surface-container-lowest text-on-surface " +
+            "font-body-md text-body-md shadow-sm outline-none focus:shadow-md mt-2";
           button.parentElement?.insertAdjacentElement("afterend", input);
         }
 
@@ -120,7 +262,8 @@
 
     scope.querySelectorAll("#assetCategory,#category-select").forEach((select) => {
       select.innerHTML = categories.map((category) => {
-        return '<option value="' + MG.esc(category.name) + '">' + MG.esc(category.name) + '</option>';
+        return '<option value="' + MG.esc(category.name) + '">' +
+          MG.esc(category.name) + '</option>';
       }).join("");
     });
 
@@ -138,6 +281,10 @@
 
       if (scope._selectedUploadFile) {
         data.set("file", scope._selectedUploadFile);
+      }
+
+      if (scope._videoThumbnail) {
+        data.set("thumbnail", scope._videoThumbnail);
       }
 
       const source = scope.querySelector("[data-upload-link]")?.value.trim();

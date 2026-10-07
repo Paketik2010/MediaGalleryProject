@@ -18,8 +18,14 @@ if ((int)$material['author_id'] !== (int)$user['id'] && $user['role'] !== 'admin
     jsonResponse(['error' => 'Можно удалять только свои материалы'], 403);
 }
 
-if (!empty($material['file_path'])) {
-    $file = dirname(__DIR__, 2) . '/src/uploads/' . basename((string)$material['file_path']);
+foreach (['file_path', 'thumbnail_url'] as $field) {
+    $path = (string)($material[$field] ?? '');
+
+    if (!str_starts_with($path, '/uploads/')) {
+        continue;
+    }
+
+    $file = dirname(__DIR__, 2) . '/src/uploads/' . basename($path);
 
     if (is_file($file)) {
         unlink($file);

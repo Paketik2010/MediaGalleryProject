@@ -17,7 +17,7 @@ $confirm = (string)($data['confirm_password'] ?? $data['confirmPassword'] ?? '')
 $errors = [];
 
 if (mb_strlen($name) < 2) $errors['name'] = 'Введите имя';
-if (!preg_match('/^[A-Za-z0-9_.-]{3,32}$/', $username)) $errors['username'] = 'Некорректный логин';
+if (!preg_match('/^[\p{L}\p{N}_.-]{3,32}$/u', $username)) $errors['username'] = 'Логин: 3–32 символа, буквы, цифры, точка, дефис или _';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['email'] = 'Некорректный email';
 if (mb_strlen($password) < 8) $errors['password'] = 'Минимум 8 символов';
 if ($password !== $confirm) $errors['confirm_password'] = 'Пароли не совпадают';
