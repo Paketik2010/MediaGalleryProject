@@ -75,6 +75,7 @@ function materialToJson(array $row): array {
         'id' => (int)$row['id'],
         'title' => $row['title'],
         'description' => $row['description'],
+        'tags' => array_values(array_filter(array_map('trim', explode(',', (string)($row['tags'] ?? ''))))),
         'type' => $row['type'],
         'category' => $row['category_name'],
         'categorySlug' => $row['category_slug'],
@@ -155,18 +156,19 @@ function detectUploadType(?array $file): ?string {
         return null;
     }
 
+    $name = strtolower((string)($file['name'] ?? ''));
+    $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true)) return 'image';
+    if (in_array($ext, ['mp3', 'wav', 'm4a', 'aac', 'flac', 'oga', 'ogg'], true)) return 'audio';
+    if (in_array($ext, ['mp4', 'webm', 'ogv', 'mov'], true)) return 'video';
+
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime = (string)$finfo->file($file['tmp_name']);
 
     if (str_starts_with($mime, 'image/')) return 'image';
+    if (str_starts_with($mime, 'audio/') || $mime === 'application/ogg') return 'audio';
     if (str_starts_with($mime, 'video/')) return 'video';
-
-    if (
-        str_starts_with($mime, 'audio/') ||
-        in_array($mime, ['application/ogg'], true)
-    ) {
-        return 'audio';
-    }
 
     return null;
 }
@@ -201,12 +203,14 @@ function saveUpload(string $type, ?array $file): ?array {
             'video/mp4' => 'mp4',
             'video/webm' => 'webm',
             'video/ogg' => 'ogv',
+            'video/quicktime' => 'mov',
         ],
         'audio' => [
             'audio/mpeg' => 'mp3',
             'audio/wav' => 'wav',
             'audio/x-wav' => 'wav',
             'audio/ogg' => 'ogg',
+            'application/ogg' => 'ogg',
             'audio/mp4' => 'm4a',
             'audio/x-m4a' => 'm4a',
             'audio/aac' => 'aac',
@@ -215,7 +219,12 @@ function saveUpload(string $type, ?array $file): ?array {
     ];
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime = $finfo->file($file['tmp_name']);
+    $mime = (string)$finfo->file($file['tmp_name']);
+    $ext = strtolower(pathinfo((string)($file['name'] ?? ''), PATHINFO_EXTENSION));
+
+    if ($type === 'audio' && $ext === 'm4a' && in_array($mime, ['video/mp4', 'application/mp4', 'application/octet-stream'], true)) {
+        $mime = 'audio/mp4';
+    }
 
     if (!isset($allowed[$type][$mime])) {
         jsonResponse(['error' => 'Неподдерживаемый формат файла'], 400);

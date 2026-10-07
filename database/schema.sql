@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS materials (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   title VARCHAR(180) NOT NULL,
   description TEXT NOT NULL,
+  tags VARCHAR(500) NOT NULL DEFAULT '',
   type ENUM('image','video','audio') NOT NULL,
   category_id INT UNSIGNED NOT NULL,
   file_path VARCHAR(255) NULL,

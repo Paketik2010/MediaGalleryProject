@@ -74,23 +74,29 @@
 
   function cardHtml(material, canDelete = false) {
     const info = typeInfo(material.type);
-    const previewSource = material.type === "image"
-      ? (material.fileUrl || material.sourceUrl || material.thumbnailUrl)
-      : material.thumbnailUrl;
-    const preview = mediaUrl(previewSource);
     const detail = pageFile("detail.html", "?id=" + material.id);
 
     let image;
 
-    if (preview) {
-      image = '<img src="' + esc(preview) + '" alt="' + esc(material.title) + '">';
-    } else if (material.type === "video") {
+    if (material.type === "video") {
       const videoSource = mediaUrl(material.fileUrl || material.sourceUrl || "");
+      const poster = mediaUrl(material.thumbnailUrl || "");
+
       image = videoSource
-        ? '<video src="' + esc(videoSource) + '" muted playsinline preload="metadata"></video>'
+        ? '<video src="' + esc(videoSource) + '"' +
+            (poster ? ' poster="' + esc(poster) + '"' : '') +
+            ' muted playsinline preload="metadata"></video>'
+        : '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
+    } else if (material.type === "image") {
+      const preview = mediaUrl(material.fileUrl || material.sourceUrl || material.thumbnailUrl || "");
+      image = preview
+        ? '<img src="' + esc(preview) + '" alt="' + esc(material.title) + '">'
         : '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
     } else {
-      image = '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
+      const preview = mediaUrl(material.thumbnailUrl || "");
+      image = preview
+        ? '<img src="' + esc(preview) + '" alt="' + esc(material.title) + '">'
+        : '<div class="mg-card__placeholder"><span class="material-symbols-outlined">' + info.icon + '</span></div>';
     }
 
     const action = canDelete
@@ -98,10 +104,11 @@
       : '<button class="mg-card__save" type="button" aria-label="Сохранить"><span class="material-symbols-outlined">bookmark_border</span></button>';
 
     return '' +
-      '<article class="mg-card" data-material-id="' + material.id + '" data-material-type="' + esc(material.type) + '" data-mg-search-text="' + esc([
+      '<article class="mg-card" data-material-id="' + material.id + '" data-material-type="' + esc(material.type) + '" data-material-created="' + esc(material.createdAt || "") + '" data-material-views="' + Number(material.views || 0) + '" data-material-likes="' + Number(material.likes || 0) + '" data-mg-search-text="' + esc([
         material.title,
         material.description,
         material.category,
+        (material.tags || []).join(" "),
         material.author?.name
       ].join(" ")) + '">' +
         '<a class="mg-card__preview" href="' + detail + '">' +

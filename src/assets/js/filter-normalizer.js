@@ -233,6 +233,31 @@
     const clear=panel.querySelector("[data-mg-clear-category]");
     const viewButtons=[...panel.querySelectorAll("[data-mg-view]")];
     const original=new Map(cards.map((card,i)=>[card,i]));
+    const pageSize=scope.classList.contains("stitch-mobile-view")
+      ? 4
+      : (c.types ? 12 : 8);
+    const status=[...scope.querySelectorAll("p,span")].find(node=>{
+      return /^Показано\s+/i.test(clean(node.textContent));
+    });
+    const paginationRoot=status?.parentElement || null;
+    let paginationButtons=paginationRoot
+      ? [...paginationRoot.querySelectorAll("div")].find(node=>{
+          return node.querySelectorAll("button").length>=2 &&
+            !!node.querySelector(".material-symbols-outlined");
+        })
+      : null;
+    const loadMore=paginationRoot
+      ? [...paginationRoot.querySelectorAll("button")].find(button=>clean(button.textContent)==="Показать еще") || null
+      : null;
+    let currentPage=1;
+
+    if (paginationRoot && !paginationButtons) {
+      paginationButtons=document.createElement("div");
+      paginationButtons.className=scope.classList.contains("stitch-mobile-view")
+        ? "flex items-center gap-space-xs pt-1"
+        : "flex items-center gap-1.5";
+      paginationRoot.appendChild(paginationButtons);
+    }
 
     function matches(card) {
       const q=clean(search.value).toLowerCase();
@@ -280,11 +305,91 @@
         : "Категория: Все";
     }
 
-    function apply() {
+    function renderPagination(total) {
+      if (!status || !paginationButtons) return;
+
+      const pages=Math.max(1,Math.ceil(total/pageSize));
+      currentPage=Math.max(1,Math.min(currentPage,pages));
+
+      const start=total ? (currentPage-1)*pageSize+1 : 0;
+      const end=total ? Math.min(currentPage*pageSize,total) : 0;
+      const suffix=key()==="audio"
+        ? " аудиоматериалов"
+        : key()==="images"
+          ? " изображений"
+          : key()==="videos"
+            ? " видео"
+            : " материалов";
+
+      status.textContent="Показано "+start+(start!==end?"–"+end:"")+" из "+total+suffix;
+
+      const normalClass=scope.classList.contains("stitch-mobile-view")
+        ? "w-9 h-9 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-sm"
+        : "w-9 h-9 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center shadow-xs transition-colors";
+      const activeClass=scope.classList.contains("stitch-mobile-view")
+        ? "w-9 h-9 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center shadow-sm"
+        : "w-9 h-9 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-xs";
+
+      paginationButtons.innerHTML="";
+
+      function pageButton(label,page,active=false,disabled=false,icon=false) {
+        const button=document.createElement("button");
+        button.type="button";
+        button.className=(active?activeClass:normalClass)+(disabled?" opacity-40 cursor-not-allowed":"");
+        button.disabled=disabled;
+
+        if (icon) {
+          button.innerHTML='<span class="material-symbols-outlined text-[18px]">'+label+'</span>';
+        } else {
+          button.textContent=label;
+        }
+
+        button.addEventListener("click",()=>{
+          if (disabled) return;
+          currentPage=page;
+          apply(false);
+          container.scrollIntoView({behavior:"smooth",block:"start"});
+        });
+
+        paginationButtons.appendChild(button);
+      }
+
+      pageButton("chevron_left",Math.max(1,currentPage-1),false,currentPage===1,true);
+
+      const from=Math.max(1,Math.min(currentPage-2,Math.max(1,pages-4)));
+      const to=Math.min(pages,from+4);
+
+      for (let p=from;p<=to;p++) {
+        pageButton(String(p),p,p===currentPage,false,false);
+      }
+
+      pageButton("chevron_right",Math.min(pages,currentPage+1),false,currentPage===pages,true);
+
+      if (loadMore) {
+        loadMore.hidden=currentPage>=pages;
+        loadMore.onclick=()=>{
+          currentPage=Math.min(pages,currentPage+1);
+          apply(false);
+          container.scrollIntoView({behavior:"smooth",block:"start"});
+        };
+      }
+    }
+
+    function apply(resetPage=false) {
+      if (resetPage) currentPage=1;
+
       sortCards();
+      const matched=cards.filter(matches);
+      const start=(currentPage-1)*pageSize;
+      const pageCards=new Set(matched.slice(start,start+pageSize));
+
       cards.forEach(card=>{
-        card.hidden=!matches(card);
+        const visible=pageCards.has(card);
+        card.hidden=!visible;
+        card.style.setProperty("display",visible?"flex":"none","important");
       });
+
+      renderPagination(matched.length);
       updateAppliedState();
     }
 
@@ -293,18 +398,18 @@
       viewButtons.forEach(btn=>btn.classList.toggle("is-active",btn.dataset.mgView===mode));
     }
 
-    search.addEventListener("input",apply);
-    type?.addEventListener("change",apply);
-    category.addEventListener("change",apply);
-    sort.addEventListener("change",apply);
-    clear.addEventListener("click",()=>{category.value="Все категории";apply();});
+    search.addEventListener("input",()=>apply(true));
+    type?.addEventListener("change",()=>apply(true));
+    category.addEventListener("change",()=>apply(true));
+    sort.addEventListener("change",()=>apply(true));
+    clear.addEventListener("click",()=>{category.value="Все категории";apply(true);});
     reset.addEventListener("click",()=>{
       search.value="";
       if (type) type.value="all";
       category.value="Все категории";
       sort.value="newest";
       setView("grid");
-      apply();
+      apply(true);
     });
     viewButtons.forEach(btn=>btn.addEventListener("click",()=>setView(btn.dataset.mgView)));
 

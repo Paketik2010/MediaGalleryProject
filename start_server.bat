@@ -8,4 +8,4 @@ if errorlevel 1 (
 )
 
 echo MediaGallery: http://127.0.0.1:8891
-C:\game\php\php.exe -d upload_max_filesize=512M -d post_max_size=520M -S 127.0.0.1:8891 -t src
+C:\game\php\php.exe -d upload_max_filesize=512M -d post_max_size=520M -S 127.0.0.1:8891 -t src router.php
