@@ -1,9 +1,9 @@
 export const images = {
-  mountain: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWkPJVf3E1o367LQ0mmVZdrEGxc4VNhomssK5qKXpe1xxZVmYJOqK48KLaD1ed__fZ5ZbGAw3pAqNElIM1QW0k2CNmBKI4vCV4QrLGuuMEZYsrxU6lcXBnfZCValFWzOtFW0hrY4EghVEV6htnfxWKoyGv47LaL0x-wrbB8oalCMaVdhiyeA7UQ_w4omTxYM4SmF5F6lGkTYtkWLR52pSOGnujtfoy7ABjXD17szU",
-  concrete: "https://lh3.googleusercontent.com/aida-public/AB6AXuDfTKEpW6gfGSeIsbVwj0ejNyN97BcbadEdJs78EYhJfUtVaahkgSeEvpcSk93U4FhJUl--J43Uvjl_bHw-5GvDtnmRMJBwbJzZ_7ja9c-S-hHOb67KNF_SczN90j0VZikAv-OoRA0ojlaWHRrQz-jOQEbcDtMTfJLI_JCBYc7riQ1kHXNYaYAx3Ug1AxX-heUqEKcc90Og6FC5xib6MklQZKu3dDZVL3EvFFVdv8w",
-  video: "https://lh3.googleusercontent.com/aida-public/AB6AXuBX29oS_Y0Bm1lkwEGBgvk5RghmCfo1F7VOc03rdb6K5mFjy-yGrjuCXR6OL1nUP23yF23F6PXBWU-lF4Iu1LwgNkshOsqUtOeVvoy3GNEvFYAxby25RIpUCulrsOvx7shiUA2URGaMFplvLbsPOH1QUOl0qCPAHdzbChVInU9eoFWLg7_rAi_RTDaWGbT1O39KatWVd6EjRhEVhDw7VO1K3N5nv17xCAP5gAtLQ2g",
-  audio: "https://lh3.googleusercontent.com/aida-public/AB6AXuBKa_Z13ROSYyZgnLmpMn6BDaMLJJlp338Eeehn_VOb2Za_lNIaPt1DHW9C8yCkEOPn9tIwkzalj_LRZ-RnPZ4dlnIAzhgbY0tk6jfS4o7yeJ2Ny5n0U9pXezA-aW3scfGI6YiQ01gd_g60JnsvsRmiSQtQbabcWqZ4ZK0V8hi47w_3Xnfl-TYq56Wm_QmPE__WqIx8tYWarmTvz7xnbXmeFelLqrKT7pLFNCU8uBo",
-  avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuCortXDnH4229Wyuq4kQRmeCjfHBd0fIuvd385D952_JsAIxdMBTKsPFIEONrBfupvgORfyB31HCBd_oY3FMrrQz0xgBQ5A3P5sE9vXG2LaQ59Jn7NzX5h4WQbd7YMcCyomhwy4cBVMotDE59FXcFvjiu8JfvxxSBLo9XQ5XmRSDU9SmcAsWFkjr5XxIfvZgeHSIymGWgbuci_DEQwYS25jFVDgu3t70goY_jqYQIw"
+  mountain: "/assets/media/media-119.jpg",
+  concrete: "/assets/media/media-098.jpg",
+  video: "/assets/media/media-058.jpg",
+  audio: "/assets/media/media-040.jpg",
+  avatar: "/assets/media/media-080.jpg"
 };
 
 export const mediaItems = [

@@ -334,7 +334,7 @@
 
     if (!source) return;
 
-    const cover = container.querySelector("[data-alt]");
+    const cover = container.querySelector("[data-media-preview]");
 
     if (cover) {
       cover.style.backgroundImage = poster ? "url('" + poster.replace(/'/g, "%27") + "')" : "none";

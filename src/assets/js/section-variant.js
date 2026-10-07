@@ -1,4 +1,4 @@
-﻿(() => {
+(() => {
   const PATH = location.pathname.toLowerCase();
 
   const IMAGE_DATA = [
@@ -10,7 +10,7 @@
       likes: "248",
       views: "1.4k",
       description: "Первые лучи восходящего солнца над Эльбрусом и плотное туманное море в ущелье.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWkPJVf3E1o367LQ0mmVZdrEGxc4VNhomssK5qKXpe1xxZVmYJOqK48KLaD1ed__fZ5ZbGAw3pAqNElIM1QW0k2CNmBKI4vCV4QrLGuuMEZYsrxU6lcXBnfZCValFWzOtFW0hrY4EghVEV6htnfxWKoyGv47LaL0x-wrbB8oalCMaVdhiyeA7UQ_w4omTxYM4SmF5F6lGkTYtkWLR52pSOGnujtfoy7ABjXD17szU"
+      preview: "/assets/media/media-119.jpg"
     },
     {
       title: "Геометрия бетона: Музей",
@@ -20,7 +20,7 @@
       likes: "167",
       views: "920",
       description: "Минималистичный брутализм, ритмичные тени и геометрические световые люки в атриуме.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuDfTKEpW6gfGSeIsbVwj0ejNyN97BcbadEdJs78EYhJfUtVaahkgSeEvpcSk93U4FhJUl--J43Uvjl_bHw-5GvDtnmRMJBwbJzZ_7ja9c-S-hHOb67KNF_SczN90j0VZikAv-OoRA0ojlaWHRrQz-jOQEbcDtMTfJLI_JCBYc7riQ1kHXNYaYAx3Ug1AxX-heUqEKcc90Og6FC5xib6MklQZKu3dDZVL3EvFFVdv8w"
+      preview: "/assets/media/media-098.jpg"
     },
     {
       title: "Утренняя роса на клевере",
@@ -30,7 +30,7 @@
       likes: "142",
       views: "780",
       description: "Макросъемка капель с преломлением солнечных лучей на рассвете в саду.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBG0MDGYKl-GGooNSmSbRvAE7qcJLvhxl7Xm9QRy-l2SemNLOAA5VNFP4awMCU0uBgAjjrYFJ0gPhhXyVF_9TQJjXzYXUlg9nSNLrsAVbodjjnfF6xMGPli9kTTulWt5Y5n_3P0CbjSNBEY7Y80Zqmd56Z4ldF7SCXjrRsMHdp2VF14zKFex0RwDKbToKlcPr3LimLh6HklTYmN0j1ersQQecpB90DhK8AeLoGH2nc"
+      preview: "/assets/media/media-036.jpg"
     },
     {
       title: "Неоновые отражения Синдзюку",
@@ -40,7 +40,7 @@
       likes: "512",
       views: "2.1k",
       description: "Атмосферный ночной Токио под дождем: зеркальные лужи и неоновые вывески.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZQ7NRSMOxZi2q224SvFix_9ZAQ2GtFXQ1Z9bUyZJWxH80EXkQYjSTcu2sa1R7SC15dn3vwQSXZZZYy7O5WKmqHZCSx0dpfhl21FUzvemixD_1P-xIH8QsF8eoXz5P5sgUgroENUCeyk1HcSX4ugt7nxWLedo7KyUkiOmRrnRf_djd40-FlAFouZd6jDbMXV6GYIrddZETKT0GkAYD7nPPE_lGj5GD5Qit6Pf6tdg"
+      preview: "/assets/media/media-061.jpg"
     },
     {
       title: "Скандинавская студия",
@@ -50,7 +50,7 @@
       likes: "210",
       views: "1.1k",
       description: "Минималистичное жилое пространство в теплых естественных тонах с обилием света.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3R1IC7373pVcA_qHejQ5gclXm8F8Rhpcjr1NXRiQaOWw8IU3ec9hXzzM4IVDGIcprofnpmOzrV_TIJ7g0FHvYokmgoFczLeA_2wxxZJxHfC_OtBm_nsZBVju1XQS2CLQbCpZ2oXdVWmHMnCXvkewEZzRr1IkD0yku-h699E6D3jnRd-d95MmwuaaJr1L8XzDy2rDk-YZXcl1AmN0xXNJoZjE1Ht0fu1gdnLqQvKc"
+      preview: "/assets/media/media-090.jpg"
     },
     {
       title: "Минимализм в архитектуре",
@@ -60,7 +60,7 @@
       likes: "98",
       views: "640",
       description: "Ритм стеклянных панелей и четкие фасадные линии высотного делового квартала.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBfi9rLgLdD6ZZ1H9Mu5vAUguJ4hYjhbeqA3wUoTdW84vPbkM1w3AJAldoEltR5HhD0KhpsrPqRmpnOsU6pQcnI2zzGdxkM0rJLnj-01itRv114pAeTh76Bh29IzoijTYgpgpwdtPZnQ2V3_oirNSqCQQEjuwT_nO12RjB6mDVlvtGjlF-3eC8aYUJjnyCdqpkBwEpQLHPUcdtvzF4y3UppUofhW15B1ycQJTNIQhE"
+      preview: "/assets/media/media-034.jpg"
     },
     {
       title: "Альпийский рассвет над озером",
@@ -70,7 +70,7 @@
       likes: "880",
       views: "3.4k",
       description: "Зеркальная гладь воды и розовое сияние первых лучей на заснеженных вершинах.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTQ0gx9JR0Z2YbZzu4JGag4U6w6KMf7UGmreWzTo3ZFklx2i9N9CFOc06ZMUSVlnMT5IeK1Kcz8oFGRJRvv6oUwtstz7mrnXqSWgwhuB544bcVChbv1FwXUY5cBJ0GaEQeXhhwyIjtSIGoGk2ZgLw8oD1f4JasU9yQ5hvDoMQleQRhh0_bt-o4CiszQB1yZwWkYfIeZoW4tHi_yQsOtbJEu1IpX0W1u5Dq7OZ2_24"
+      preview: "/assets/media/media-053.jpg"
     },
     {
       title: "Рабочее место дизайнера",
@@ -80,7 +80,7 @@
       likes: "340",
       views: "1.8k",
       description: "Минималистичный сетап с ультрашироким дисплеем, механической клавиатурой и лампой.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuDTaZQorv5USegapvLumOcsZfV99V08KYJgS73EmC4rz9uq6wFxk6LpBCi6RzW01sjhw5DHxynrX7UYhqwEGCfMTPbgSnf0Ft5wRFISuuGrJxnBoM9VtxSe7gz75jhf_kqPCdfjAGuF1478alprdiPP3AL8w_wYqUR9V0vBtI6IavtawcCbq6swglJKcP7GrczzBPCD0GQVvLUe5Uhmo_2cnv8234saSYjJpZTwIII"
+      preview: "/assets/media/media-113.jpg"
     }
   ];
 
@@ -93,7 +93,7 @@
       likes: "348",
       views: "4.2k",
       description: "Пошаговый разбор современной адаптивной верстки и практических приемов.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuCDYYzIhFiBbi7d_OcIrplj5M4tOwTSpEPhdGP3iQVopdk_QWjVDseG74b5nJRR4eyI9X0FGIWdzqr1RpDc9TaRfr3dcIJbfXSSTlclt-8WEqcUVPCEdUolmO43Uiw4lmrkcL1D_GWpO4cenrNPNqSDIkmVQY3AJ6uTBiFOJNd-xju-QeToSzPbpxcS_kKTAqV82ctFjLMkAR94FmcEnxR4Djm5Z7n5lp7LwMChvbs"
+      preview: "/assets/media/media-067.jpg"
     },
     {
       title: "Дикая Исландия: Аэросъемка ледников и водопадов",
@@ -103,7 +103,7 @@
       likes: "1.2k",
       views: "12.8k",
       description: "Кинематографическая аэросъемка ледников, черных пляжей и мощных водопадов.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQwFctFDmnyjlferD-7Z8C_wkOsc6cB6xzYr5NYB4WFnWOTx5SM4z5uebFAPSrzCULnMWGSDS5YQm9Phkb7igYoVpKpH6whF8sQs4n_1mCBvMdrurfGxoXNLgzU_HOKDeEBtDrgI-q6PLQy2dawf5DC8M3mmTO6joWSRv0HdMZyBovYkzHEHuleGoz32FyY9gxLk2vrzXDIVZcQ8oWt2_z-iBaqJ55O0-k0xs7AbM"
+      preview: "/assets/media/media-109.jpg"
     },
     {
       title: "Архитектура дизайн-систем: масштабирование токенов",
@@ -113,7 +113,7 @@
       likes: "512",
       views: "6.4k",
       description: "Как строить масштабируемые дизайн-системы и поддерживать единый визуальный язык.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuAMp8I3eqGYuaDvoACoxecviAHOBEfCiqamKVGwCvkxqTGZ2I2FYpJR7wL4-iY-vFkgi0qnxhkdkq4_tuRD2ywQeT9PHXfFAdiC7ECNpLUwhJ90TgF9Yd5kdZFhij7PJ0BXpi8BRSLAO8dJxdcmJTI_oZAIijibylTWayOdNrLqQg3DJqTt7cr379pngviMy2Tm3e-BlqJdZcq7fO3OvahRLN3iBo1qHulL1kW0KUU"
+      preview: "/assets/media/media-015.jpg"
     },
     {
       title: "Таймлапс: ночное побережье и звездное небо",
@@ -123,7 +123,7 @@
       likes: "840",
       views: "9.1k",
       description: "Медленный ночной таймлапс побережья под ярким звездным небом.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBrhYAuR2EHfRe1gClA_r_SjwaZDS6O5FZtJG40T6eJgq1-xPv-JwroOl7QoAKUHySBn6RC1qfuxSZwusuYtwN8QaO3MCLOj2mQ1pAWsfPqVm0JtbgWA-PO1szrbI4KslybCn80o_rEhDdPrG2MZk9pKr3tfwi5qX8hI7uUfbUzHDhIWp0RIRB-ktq0sTTKgnrMoXc1MPfS8jo0USOUuQrabfoF0rKTb1IlMMLHhCk"
+      preview: "/assets/media/media-045.jpg"
     },
     {
       title: "Шоурил моушн-дизайна 2026",
@@ -133,7 +133,7 @@
       likes: "2.1k",
       views: "18.5k",
       description: "Подборка 3D-анимации, кинетической типографики и экспериментального моушна.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuC62_XcWaSRsjdGc0O22Nq3P69nGlBxROP7J7v9NtRzAwX-BJtOMEnjiyN6Ozi7HpPcNTntAWQ8H5YKt4_M1ufI0ahU0tWfRXKx0QmsjOjrCzPLw9gSE23ai48VCIid3FZA_a_hFoRyi7d5KzTklG1pqlC0kLnGhsynjchpB6mSPKoBReFO-UCsacKr_Ln-b_3V9Sj_i_PmaF56Odvz8emuJSwgmqB7_68kxKHqe7A"
+      preview: "/assets/media/media-064.jpg"
     },
     {
       title: "Основы UI-анимации: физика жестов и тайминги",
@@ -143,7 +143,7 @@
       likes: "610",
       views: "7.3k",
       description: "Практика плавных интерфейсных переходов, жестов и естественной физики движения.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBxoKoNI1CnRF1yU582IbFOttdIeVE83wdYm-FbI-cqpEybD80OAJoxGg9PP-rWeZiWL8DIev7xCdEIW26w0OJvHI9vcseV9P05dbUKW5HXMM8O6A9cc5At7ylIR13iBM05PJnB1NismWKGIYcGSZvjLVQGbrv0T0OUcqGpsqmKuLecRDGfuMYO9E3BAAQ7srSB2XzihhUtu3exWzElldMsx60NZJb1diJ5G6JjoXY"
+      preview: "/assets/media/media-059.jpg"
     },
     {
       title: "Утро в кофейне: кинематографичный слоу-моушн",
@@ -153,7 +153,7 @@
       likes: "490",
       views: "5.8k",
       description: "Мягкий утренний свет, кофе и спокойная кинематографичная съемка в слоу-моушн.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTJ6Rs4bTQM7M8smClC1G3QsgOSHKchfKSCzrGOWh4nwY8TY_BiUxZAT6b1vjRQBqyuqu28083zobQmA55YPAJxz4p2dSki6a2u6Sreg1TnAASnc4K1u83KZze5BKkN1b6CDdTGz2Ea_AFXcO7F983yqkdJ1ezZ62qvgWrttAkWOSeoxangsCJC36fjfhteMXU4PKNiJa4qWgiayIKERA87mamfBsG4MKR4TpUAi0"
+      preview: "/assets/media/media-052.jpg"
     },
     {
       title: "Как устроен квантовый процессор",
@@ -163,7 +163,7 @@
       likes: "970",
       views: "11.2k",
       description: "Наглядный разбор архитектуры квантового процессора и базовых принципов его работы.",
-      preview: "https://lh3.googleusercontent.com/aida-public/AB6AXuAt1n6Po3qWVS6x6zuTx8nk0q_x7THJ6Jc9VRDiMqThxfJyxXbf6iEJtitgQrpxQohaLtzrXdQpAj3oGpzK3zrhB8_QQsPr3RKb83FIwgrgK-ezlxh7UK7TmNj3kf51FCgmN7Zn8hUHlO0778Ehomdu6BTeUl6j5vccd0tv9hnb57IAApR8o91Py4v8Q4437v45Au6LO7TLo98UpqwQTkA4Xhfyn7KVewrF6DTTu_A"
+      preview: "/assets/media/media-017.jpg"
     }
   ];
 
