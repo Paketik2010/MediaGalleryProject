@@ -42,6 +42,8 @@ if ($sort === 'oldest') {
     $order = 'm.created_at ASC';
 } elseif ($sort === 'name') {
     $order = 'm.title ASC';
+} elseif ($sort === 'size') {
+    $order = 'm.size_bytes DESC, m.created_at DESC';
 } elseif ($sort === 'popular') {
     $order = 'm.views DESC';
 } else {

@@ -124,7 +124,8 @@
   }
 
   function html(c) {
-    const categoryOptions=c.categories.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");
+    const categories = window.MediaGalleryCategoryNames || c.categories;
+    const categoryOptions=categories.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");
     const typeControl=c.types
       ? '<label class="mg-filter-control mg-filter-control--select mg-filter-control--type">'+
           '<span class="material-symbols-outlined">perm_media</span>'+
@@ -151,6 +152,7 @@
             '<option value="newest">Сначала новые</option>'+
             '<option value="oldest">Сначала старые</option>'+
             '<option value="name">По названию</option>'+
+            (c.typeIcon==="graphic_eq" ? '<option value="duration">По длительности</option>' : "")+
             '<option value="popular">По популярности</option>'+
           '</select>'+
         '</label>'+
@@ -282,6 +284,9 @@
       if (sort.value==="oldest") ordered.sort((a,b)=>original.get(b)-original.get(a));
       else if (sort.value==="name") ordered.sort((a,b)=>clean(a.querySelector(".mg-card__title")?.textContent).localeCompare(clean(b.querySelector(".mg-card__title")?.textContent),"ru"));
       else if (sort.value==="popular") ordered.sort((a,b)=>popularity(b)-popularity(a));
+      else if (sort.value==="duration") ordered.sort((a,b)=>
+        (window.MediaGalleryGetAudioDuration?.(b.dataset.materialId) || 0) -
+        (window.MediaGalleryGetAudioDuration?.(a.dataset.materialId) || 0));
       else ordered.sort((a,b)=>original.get(a)-original.get(b));
       ordered.forEach(card=>container.appendChild(card));
     }

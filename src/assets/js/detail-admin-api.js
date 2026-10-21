@@ -427,12 +427,14 @@
       return /^\d{2}:\d{2}\s*\/\s*\d{2}:\d{2}$/.test(node.textContent.trim());
     });
     const scrubber = container.querySelector("#scrubber-container") ||
+      container.querySelector("#playback-fill")?.parentElement ||
       [...container.querySelectorAll("div")].find((node) => {
         return String(node.getAttribute("onclick") || "").includes("handleScrub");
       });
     const fill = container.querySelector("#scrubber-fill") ||
       container.querySelector("#playback-fill");
-    const thumb = container.querySelector("#scrubber-thumb");
+    const thumb = container.querySelector("#scrubber-thumb") ||
+      container.querySelector("#scrub-thumb");
     const fullscreen = container.querySelector("#fullscreen-btn") ||
       container.querySelector('button[title="На весь экран"]');
 
@@ -451,18 +453,42 @@
     });
 
     container.addEventListener("click", (event) => {
-      if (event.target.closest("button") || event.target.closest("#scrubber-container")) return;
+      if (event.target.closest("button") || (scrubber && scrubber.contains(event.target))) return;
       togglePlayback();
     });
 
     if (scrubber) {
       scrubber.removeAttribute("onclick");
-      scrubber.addEventListener("click", (event) => {
-        if (!Number.isFinite(video.duration) || !video.duration) return;
+      scrubber.style.touchAction = "none";
+      let dragging = false;
 
+      function seek(clientX) {
+        if (!Number.isFinite(video.duration) || video.duration <= 0) return;
         const rect = scrubber.getBoundingClientRect();
-        const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+        if (!rect.width) return;
+        const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
         video.currentTime = video.duration * ratio;
+        updateTime();
+      }
+
+      scrubber.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dragging = true;
+        scrubber.setPointerCapture?.(event.pointerId);
+        seek(event.clientX);
+      });
+      scrubber.addEventListener("pointermove", (event) => {
+        if (dragging) seek(event.clientX);
+      });
+      scrubber.addEventListener("pointerup", (event) => {
+        if (dragging) seek(event.clientX);
+        dragging = false;
+      });
+      scrubber.addEventListener("pointercancel", () => { dragging = false; });
+      scrubber.addEventListener("click", (event) => {
+        event.stopPropagation();
+        seek(event.clientX);
       });
     }
 
@@ -498,6 +524,7 @@
 
     video.addEventListener("pause", updateIcons);
     video.addEventListener("timeupdate", updateTime);
+    video.addEventListener("durationchange", updateTime);
     video.addEventListener("loadedmetadata", () => {
       updateTime();
 

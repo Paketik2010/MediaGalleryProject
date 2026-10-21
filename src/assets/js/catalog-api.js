@@ -9,6 +9,32 @@
     "audio.html": "audio"
   };
   const isCatalogPage = page in catalogTypes;
+  const audioDurations = new Map();
+  window.MediaGalleryGetAudioDuration = (id) => audioDurations.get(Number(id)) || 0;
+
+  function readAudioDuration(material) {
+    return new Promise((resolve) => {
+      const source = MG.mediaUrl(material.fileUrl || material.sourceUrl || "");
+      if (!source) { resolve(0); return; }
+      const audio = document.createElement("audio");
+      let settled = false;
+      const finish = (seconds) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        const duration = Number.isFinite(seconds) ? seconds : 0;
+        audioDurations.set(Number(material.id), duration);
+        resolve(duration);
+        audio.removeAttribute("src");
+        audio.load();
+      };
+      const timeout = setTimeout(() => finish(0), 6000);
+      audio.addEventListener("loadedmetadata", () => finish(audio.duration), { once: true });
+      audio.addEventListener("error", () => finish(0), { once: true });
+      audio.preload = "metadata";
+      audio.src = source;
+    });
+  }
 
   if (isCatalogPage) {
     document.documentElement.classList.add("mg-catalog-loading");
@@ -19,16 +45,30 @@
 
     const type = catalogTypes[page];
     const query = type ? "?type=" + encodeURIComponent(type) : "";
-    const result = await MG.api("materials", { query });
+    const [result, categoryResult] = await Promise.all([
+      MG.api("materials", { query }),
+      MG.api("categories")
+    ]);
+    const categoryNames = ["Все категории", ...categoryResult.categories.map((item) => item.name)];
+    window.MediaGalleryCategoryNames = categoryNames;
+    window.MediaGalleryDurationReady = type === "audio"
+      ? Promise.all(result.materials.map(readAudioDuration))
+      : Promise.resolve();
 
     document.querySelectorAll(".desktop-view,.mobile-view").forEach((scope) => {
       MG.renderCards(scope, result.materials);
       updateMobileCatalogSummary(scope, result.materials, type);
-      setupMobileCatalog(scope, result.materials, type);
+      setupMobileCatalog(scope, result.materials, type, categoryNames);
     });
 
     if (window.MediaGalleryRefreshFilters) {
       window.MediaGalleryRefreshFilters();
+    }
+    if (type === "audio") {
+      window.MediaGalleryDurationReady.then(() => {
+        const sorter = document.querySelector(".desktop-view .mg-filter-panel [data-mg-sort]");
+        if (sorter?.value === "duration") sorter.dispatchEvent(new Event("change"));
+      });
     }
 
     document.documentElement.classList.remove("mg-catalog-loading");
@@ -188,7 +228,7 @@
     normalizeMobileCards(container);
   }
 
-  function setupMobileCatalog(scope, materials, fixedType) {
+  function setupMobileCatalog(scope, materials, fixedType, categoryNames) {
     if (!scope.classList.contains("mobile-view")) return;
     if (scope.dataset.mgMobileCatalogMounted === "1") return;
 
@@ -289,6 +329,8 @@
         );
       } else if (state.sort === "likes") {
         list.sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0));
+      } else if (state.sort === "duration") {
+        list.sort((a, b) => window.MediaGalleryGetAudioDuration(b.id) - window.MediaGalleryGetAudioDuration(a.id));
       } else if (state.sort === "name") {
         list.sort((a, b) => clean(a.title).localeCompare(clean(b.title), "ru"));
       } else {
@@ -508,8 +550,7 @@
         ? [...drawer.querySelectorAll("span")].find((node) => clean(node.textContent) === "Тематика")
         : null;
       const categoryHost = categoryHeading?.parentElement?.querySelector(".flex.flex-wrap");
-      const categories = [...new Set(allMaterials.map((item) => item.category).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, "ru"));
+      const categories = categoryNames.filter((name) => name !== "Все категории");
 
       if (categoryHost) {
         categoryHost.innerHTML = categories.map((category) =>
@@ -570,8 +611,7 @@
     } else {
       const searchBox = search?.closest("div.relative.w-full");
       const categoryRow = searchBox?.nextElementSibling;
-      const categories = [...new Set(allMaterials.map((item) => item.category).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, "ru"));
+      const categories = categoryNames.filter((name) => name !== "Все категории");
 
       if (categoryRow && categoryRow.querySelector("button")) {
         categoryRow.classList.add("mg-mobile-category-row");
@@ -673,7 +713,8 @@
         menu.innerHTML =
           '<button type="button" data-mobile-sort="newest" class="is-active">Сначала новые</button>' +
           '<button type="button" data-mobile-sort="popular">По популярности</button>' +
-          '<button type="button" data-mobile-sort="name">По названию</button>';
+          '<button type="button" data-mobile-sort="name">По названию</button>' +
+          (fixedType === "audio" ? '<button type="button" data-mobile-sort="duration">По длительности</button>' : "");
         sortWrap.appendChild(menu);
 
         sortButton.type = "button";
@@ -703,13 +744,20 @@
     }
 
     render();
+    if (fixedType === "audio") {
+      window.MediaGalleryDurationReady?.then(() => {
+        if (state.sort === "duration") render();
+      });
+    }
   }
 
   async function setupSearch() {
     if (page !== "search.html") return;
 
     const initialQuery = new URLSearchParams(location.search).get("q") || "";
-    const all = await MG.api("materials");
+    const [all, categoryResult] = await Promise.all([
+      MG.api("materials"), MG.api("categories")
+    ]);
     const counts = {
       all: all.materials.length,
       image: all.materials.filter((item) => item.type === "image").length,
@@ -728,7 +776,14 @@
       const typeButtons = [...scope.querySelectorAll("button")].filter((button) => {
         return /Все\s*\(\d+\)|Изображения\s*\(\d+\)|Видео\s*\(\d+\)|Аудио\s*\(\d+\)/i.test(button.textContent);
       });
-      const category = scope.querySelector("select");
+      const category = scope.querySelector("#categorySelect") || scope.querySelector("select");
+      if (category) {
+        category.innerHTML = '<option value="all">Все категории</option>' +
+          categoryResult.categories.map((item) =>
+            '<option value="' + MG.esc(item.name) + '">' + MG.esc(item.name) + "</option>"
+          ).join("");
+      }
+      const sort = scope.querySelector("#sortSelect") || [...scope.querySelectorAll("select")][1];
       const findButton = [...scope.querySelectorAll("button")].find((button) => {
         return button.textContent.trim() === "Найти";
       });
@@ -803,6 +858,16 @@
 
         if (q) params.set("q", q);
         if (activeType) params.set("type", activeType);
+        if (sort) {
+          const sorting = {
+            relevance: "newest",
+            "По релевантности": "newest",
+            "Сначала новые": "newest",
+            "По популярности": "popular",
+            "По размеру": "size"
+          };
+          params.set("sort", sorting[sort.value] || sort.value);
+        }
 
         if (category) {
           const selected = category.options[category.selectedIndex]?.text || "";
@@ -865,6 +930,10 @@
         }
       });
 
+      sort?.addEventListener("change", () => {
+        visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
+        runSearch();
+      });
       category?.addEventListener("change", () => {
         visibleLimit = isMobile ? 6 : Number.POSITIVE_INFINITY;
         runSearch();
